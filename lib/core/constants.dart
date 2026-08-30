@@ -1,11 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 class AppConstants {
   // Base URLs
   // For Android Emulator use: http://10.0.2.2:8000
   // For Web / Windows / Device Preview use: http://localhost:8000
   static const String defaultBaseUrl = 'http://localhost:8000/api/v1';
-  static const String defaultWsUrl = 'ws://localhost:8000/api/v1/telemetry/ws/dashboard';
+  static const String defaultWsUrl = 'ws://localhost:8000/ws/dashboard';
 
   // App Strings
   static const String appName = 'G-Connect';
