@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/constants.dart';
@@ -166,7 +166,7 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
                     // 2. Three Top Executive Hero KPI Cards (Interactive Carousel)
                     if (selectedNode != null) ...[
                       SizedBox(
-                        height: 130,
+                        height: 145,
                         child: PageView(
                           controller: _pageController,
                           onPageChanged: (idx) => setState(() => _heroCardIndex = idx),
