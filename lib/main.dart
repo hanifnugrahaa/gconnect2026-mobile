@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme.dart';
 import 'providers/auth_provider.dart';
@@ -26,6 +26,7 @@ class GConnectMobileApp extends ConsumerWidget {
       title: 'G-Connect Mobile',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      themeMode: ThemeMode.light, // Single Mode: Enforce clean Light Mode
       home: _resolveHomeScreen(authState),
     );
   }
