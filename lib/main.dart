@@ -1,0 +1,51 @@
+﻿import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/theme.dart';
+import 'providers/auth_provider.dart';
+import 'presentation/screens/login_screen.dart';
+import 'presentation/screens/guest_dashboard_screen.dart';
+import 'presentation/screens/main_nav_screen.dart';
+
+void main() {
+  runApp(
+    const ProviderScope(
+      child: GConnectMobileApp(),
+    ),
+  );
+}
+
+class GConnectMobileApp extends ConsumerWidget {
+  const GConnectMobileApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+
+    return MaterialApp(
+      title: 'G-Connect Mobile',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: _resolveHomeScreen(authState),
+    );
+  }
+
+  Widget _resolveHomeScreen(AuthState state) {
+    if (state.isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (state.isAuthenticated) {
+      return const MainNavScreen();
+    }
+
+    if (state.isGuest) {
+      return const GuestDashboardScreen();
+    }
+
+    return const LoginScreen();
+  }
+}
