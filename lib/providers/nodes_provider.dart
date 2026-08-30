@@ -1,5 +1,6 @@
 ﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/node_model.dart';
+import '../models/sensor_model.dart';
 import '../services/api_service.dart';
 
 class NodesState {
@@ -51,17 +52,51 @@ class NodesNotifier extends StateNotifier<NodesState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final list = await _api.getNodes();
-      state = NodesState(
-        isLoading: false,
-        nodes: list,
-        selectedNodeId: state.selectedNodeId ?? (list.isNotEmpty ? list.first.id : null),
-      );
+      if (list.isNotEmpty) {
+        state = NodesState(
+          isLoading: false,
+          nodes: list,
+          selectedNodeId: state.selectedNodeId ?? list.first.id,
+        );
+      } else {
+        _loadFallbackNodes();
+      }
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString().replaceAll('Exception: ', ''),
-      );
+      _loadFallbackNodes(error: 'Gagal terhubung ke backend (Offline). Menampilkan data demo.');
     }
+  }
+
+  void _loadFallbackNodes({String? error}) {
+    final demoNode = NodeModel(
+      id: 'demo-node-001',
+      nodeCode: 'NODE001',
+      name: 'IoT Lab ELINS (Demo)',
+      description: 'Stasiun telemetri lahan presisi',
+      status: 'online',
+      latitude: -7.7713,
+      longitude: 110.3775,
+      sensors: [
+        SensorModel(id: '1', name: 'Nitrogen (N)', type: 'npk', unit: 'mg/kg'),
+        SensorModel(id: '2', name: 'Phosphorus (P)', type: 'npk', unit: 'mg/kg'),
+        SensorModel(id: '3', name: 'Potassium (K)', type: 'npk', unit: 'mg/kg'),
+        SensorModel(id: '4', name: 'Kelembaban Tanah 1', type: 'soil', unit: '%'),
+        SensorModel(id: '5', name: 'Kelembaban Tanah 2', type: 'soil', unit: '%'),
+        SensorModel(id: '6', name: 'pH Tanah', type: 'soil', unit: 'pH'),
+        SensorModel(id: '7', name: 'EC Tanah (Konduktivitas)', type: 'soil', unit: 'uS/cm'),
+        SensorModel(id: '8', name: 'Suhu Tanah', type: 'soil', unit: '°C'),
+        SensorModel(id: '9', name: 'Suhu Lingkungan', type: 'environment', unit: '°C'),
+        SensorModel(id: '10', name: 'Kelembaban Udara', type: 'environment', unit: '%'),
+        SensorModel(id: '11', name: 'Suhu Boks IoT', type: 'environment', unit: '°C'),
+        SensorModel(id: '12', name: 'Tegangan Baterai', type: 'environment', unit: 'V'),
+      ],
+    );
+
+    state = NodesState(
+      isLoading: false,
+      nodes: [demoNode],
+      selectedNodeId: demoNode.id,
+      errorMessage: error,
+    );
   }
 
   void selectNode(String id) {

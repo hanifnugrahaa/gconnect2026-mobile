@@ -42,7 +42,7 @@ class GuestDashboardScreen extends ConsumerWidget {
             padding: const EdgeInsets.only(right: 12),
             child: ElevatedButton.icon(
               onPressed: () {
-                ref.read(authProvider.notifier).logout(); // Goes back to login screen
+                ref.read(authProvider.notifier).goToLogin();
               },
               icon: const Icon(LucideIcons.logIn, size: 14),
               label: const Text('Login', style: TextStyle(fontSize: 12)),

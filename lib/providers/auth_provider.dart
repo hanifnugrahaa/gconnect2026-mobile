@@ -1,4 +1,4 @@
-﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
@@ -86,6 +86,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = AuthState(
       isAuthenticated: false,
       isGuest: true,
+      isLoading: false,
+    );
+  }
+
+  void goToLogin() {
+    state = AuthState(
+      isAuthenticated: false,
+      isGuest: false,
       isLoading: false,
     );
   }
