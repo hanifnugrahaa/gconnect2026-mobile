@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+ï»¿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/constants.dart';
@@ -104,7 +104,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(LucideIcons.alertCircle, color: AppColors.danger, size: 20),
+                          const Icon(LucideIcons.circleAlert, color: AppColors.danger, size: 20),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -127,7 +127,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   TextFormField(
                     controller: _usernameController,
                     decoration: const InputDecoration(
-                      hintText: 'e.g. admin atau peneliti@ugm.ac.id',
+                      hintText: 'e.g. gconnect atau admin',
                       prefixIcon: Icon(LucideIcons.user, size: 18, color: AppColors.textMuted),
                     ),
                     validator: (val) {
@@ -146,8 +146,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
+                    obscuringCharacter: 'â€¢',
+                    style: const TextStyle(fontFamily: 'Roboto', letterSpacing: 2, fontSize: 14),
                     decoration: InputDecoration(
-                      hintText: '••••••••',
+                      hintText: 'â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢',
+                      hintStyle: const TextStyle(fontFamily: 'Roboto', letterSpacing: 2, color: AppColors.textMuted),
                       prefixIcon: const Icon(LucideIcons.lock, size: 18, color: AppColors.textMuted),
                       suffixIcon: IconButton(
                         icon: Icon(
