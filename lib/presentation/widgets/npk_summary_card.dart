@@ -24,7 +24,7 @@ class NpkSummaryCard extends StatelessWidget {
     final kRatio = total > 0 ? (kVal / total) * 100 : 33.4;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -38,6 +38,7 @@ class NpkSummaryCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -45,46 +46,46 @@ class NpkSummaryCard extends StatelessWidget {
             children: [
               const Row(
                 children: [
-                  Icon(LucideIcons.flaskConical, size: 16, color: AppColors.nitrogen),
+                  Icon(LucideIcons.flaskConical, size: 15, color: AppColors.nitrogen),
                   SizedBox(width: 6),
                   Text(
                     'Keseimbangan Hara NPK',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
                   ),
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                 decoration: BoxDecoration(
                   color: AppColors.primary.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   insightText ?? 'Seimbang & Subur',
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.primary),
+                  style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AppColors.primary),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
 
-          // 3 Column Values with Soft Tinted Pill Boxes
+          // 3 Column Values
           Row(
             children: [
-              _buildNpkItem('Nitrogen (N)', nVal, nRatio, AppColors.nitrogen),
-              const SizedBox(width: 8),
-              _buildNpkItem('Phosphor (P)', pVal, pRatio, AppColors.phosphorus),
-              const SizedBox(width: 8),
-              _buildNpkItem('Kalium (K)', kVal, kRatio, AppColors.potassium),
+              _buildNpkItem('Nitrogen', nVal, nRatio, AppColors.nitrogen),
+              const SizedBox(width: 6),
+              _buildNpkItem('Phosphor', pVal, pRatio, AppColors.phosphorus),
+              const SizedBox(width: 6),
+              _buildNpkItem('Kalium', kVal, kRatio, AppColors.potassium),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
-          // Segmented Distribution Multi-Color Bar
+          // Segmented Distribution Bar
           ClipRRect(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(4),
             child: SizedBox(
-              height: 7,
+              height: 5,
               child: Row(
                 children: [
                   Expanded(flex: nRatio.round().clamp(1, 100), child: Container(color: AppColors.nitrogen)),
@@ -104,36 +105,33 @@ class NpkSummaryCard extends StatelessWidget {
   Widget _buildNpkItem(String title, double val, double percent, Color color) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
         decoration: BoxDecoration(
           color: color.withOpacity(0.06),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: color.withOpacity(0.15)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  title.split(' ')[0],
-                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: color),
+                  title,
+                  style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: color),
                 ),
                 Text(
                   '${percent.toStringAsFixed(0)}%',
-                  style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: color),
+                  style: TextStyle(fontSize: 8.5, fontWeight: FontWeight.w800, color: color),
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
             Text(
               val > 0 ? val.toStringAsFixed(1) : '--',
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
-            ),
-            const Text(
-              'mg/kg',
-              style: TextStyle(fontSize: 9, fontWeight: FontWeight.w600, color: AppColors.textMuted),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppColors.textPrimary),
             ),
           ],
         ),

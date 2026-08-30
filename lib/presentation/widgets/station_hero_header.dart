@@ -20,9 +20,10 @@ class StationHeroHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final isOnline = node.status.toLowerCase() == 'online';
     final nowFormatted = DateFormat('HH:mm').format(DateTime.now());
+    final displayCode = node.nodeCode.isNotEmpty ? node.nodeCode : 'NODE-01';
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -52,7 +53,7 @@ class StationHeroHeader extends StatelessWidget {
                       border: Border.all(color: AppColors.primaryLight.withOpacity(0.3)),
                     ),
                     child: Text(
-                      node.nodeCode,
+                      displayCode,
                       style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.primary),
                     ),
                   ),
@@ -107,7 +108,7 @@ class StationHeroHeader extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 17,
+                    fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: AppColors.textPrimary,
                     letterSpacing: -0.3,
