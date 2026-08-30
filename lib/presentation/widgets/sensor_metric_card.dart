@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../core/constants.dart';
 import '../../models/sensor_model.dart';
@@ -46,7 +46,22 @@ class SensorMetricCard extends StatelessWidget {
     if (lower.contains('kalium')) return AppColors.potassium;
     if (lower.contains('kelembaban')) return AppColors.moisture;
     if (lower.contains('suhu')) return AppColors.temperature;
+    if (lower.contains('ph')) return AppColors.primary;
     return AppColors.primary;
+  }
+
+  String _getStatusLabel(double? val) {
+    if (val == null) return 'Offline';
+    if (sensor.maxThreshold != null && val > sensor.maxThreshold!) return 'Tinggi';
+    if (sensor.minThreshold != null && val < sensor.minThreshold!) return 'Rendah';
+    return 'Optimal';
+  }
+
+  Color _getStatusColor(double? val) {
+    if (val == null) return AppColors.textMuted;
+    if (sensor.maxThreshold != null && val > sensor.maxThreshold!) return AppColors.warning;
+    if (sensor.minThreshold != null && val < sensor.minThreshold!) return AppColors.danger;
+    return AppColors.success;
   }
 
   @override
@@ -54,6 +69,8 @@ class SensorMetricCard extends StatelessWidget {
     final accentColor = _getColorForSensor(sensor.name);
     final iconData = _getIconForSensor(sensor.name, sensor.type);
     final formattedVal = value != null ? value!.toStringAsFixed(1) : '--';
+    final statusLabel = _getStatusLabel(value);
+    final statusColor = _getStatusColor(value);
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -77,38 +94,38 @@ class SensorMetricCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
                   color: accentColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(iconData, color: accentColor, size: 18),
+                child: Icon(iconData, color: accentColor, size: 16),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
                 decoration: BoxDecoration(
-                  color: (value != null ? AppColors.success : AppColors.textMuted).withOpacity(0.12),
+                  color: statusColor.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  value != null ? 'Optimal' : 'Offline',
+                  statusLabel,
                   style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: value != null ? AppColors.success : AppColors.textMuted,
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w800,
+                    color: statusColor,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
             sensor.name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
               color: AppColors.textSecondary,
             ),
           ),
@@ -120,19 +137,24 @@ class SensorMetricCard extends StatelessWidget {
               Text(
                 formattedVal,
                 style: const TextStyle(
-                  fontSize: 22,
+                  fontSize: 21,
                   fontWeight: FontWeight.w900,
                   color: AppColors.textPrimary,
+                  letterSpacing: -0.5,
                 ),
               ),
               if (sensor.unit.isNotEmpty) ...[
-                const SizedBox(width: 4),
-                Text(
-                  sensor.unit,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textMuted,
+                const SizedBox(width: 3),
+                Expanded(
+                  child: Text(
+                    sensor.unit,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textMuted,
+                    ),
                   ),
                 ),
               ],
