@@ -1,8 +1,9 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../core/constants.dart';
 import '../models/user_model.dart';
 import '../models/node_model.dart';
+import '../models/sensor_model.dart';
 import '../models/telemetry_feed_model.dart';
 import 'storage_service.dart';
 
@@ -71,7 +72,31 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
-      return data.map((json) => NodeModel.fromJson(json as Map<String, dynamic>)).toList();
+      final nodes = data.map((json) => NodeModel.fromJson(json as Map<String, dynamic>)).toList();
+
+      for (int i = 0; i < nodes.length; i++) {
+        final node = nodes[i];
+        final code = node.nodeCode.isNotEmpty ? node.nodeCode : node.id;
+        try {
+          final sUri = Uri.parse('$_baseUrl/nodes/$code/sensors/');
+          final sResp = await http.get(sUri, headers: headers);
+          if (sResp.statusCode == 200) {
+            final sData = jsonDecode(sResp.body) as List<dynamic>;
+            final sensors = sData.map((s) => SensorModel.fromJson(s as Map<String, dynamic>)).toList();
+            nodes[i] = NodeModel(
+              id: node.id,
+              nodeCode: node.nodeCode,
+              name: node.name,
+              description: node.description,
+              status: node.status,
+              latitude: node.latitude,
+              longitude: node.longitude,
+              sensors: sensors,
+            );
+          }
+        } catch (_) {}
+      }
+      return nodes;
     } else {
       throw Exception('Gagal memuat daftar stasiun IoT.');
     }
