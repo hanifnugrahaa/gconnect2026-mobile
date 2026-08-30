@@ -1,4 +1,4 @@
-﻿import 'sensor_model.dart';
+import 'sensor_model.dart';
 
 class NodeModel {
   final String id;
@@ -25,7 +25,7 @@ class NodeModel {
     final rawSensors = json['sensors'] as List<dynamic>? ?? [];
     return NodeModel(
       id: json['id']?.toString() ?? '',
-      nodeCode: json['node_code'] ?? '',
+      nodeCode: json['node_id'] ?? json['node_code'] ?? '',
       name: json['name'] ?? 'Stasiun Agro',
       description: json['description'],
       status: json['status'] ?? 'offline',
