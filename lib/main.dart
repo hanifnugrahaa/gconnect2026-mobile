@@ -5,6 +5,7 @@ import 'providers/auth_provider.dart';
 import 'presentation/screens/login_screen.dart';
 import 'presentation/screens/guest_dashboard_screen.dart';
 import 'presentation/screens/main_nav_screen.dart';
+import 'presentation/widgets/app_preloader.dart';
 
 void main() {
   runApp(
@@ -31,10 +32,8 @@ class GConnectMobileApp extends ConsumerWidget {
 
   Widget _resolveHomeScreen(AuthState state) {
     if (state.isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+      return const AppPreloader(
+        message: 'Menyiapkan sistem telemetri',
       );
     }
 

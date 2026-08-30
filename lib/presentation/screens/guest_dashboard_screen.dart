@@ -8,6 +8,7 @@ import '../../providers/telemetry_provider.dart';
 import '../widgets/sensor_metric_card.dart';
 import '../widgets/npk_summary_card.dart';
 import '../widgets/node_selector_bar.dart';
+import '../widgets/app_preloader.dart';
 
 class GuestDashboardScreen extends ConsumerWidget {
   const GuestDashboardScreen({super.key});
@@ -55,7 +56,7 @@ class GuestDashboardScreen extends ConsumerWidget {
         ],
       ),
       body: nodesState.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppPreloader(fullScreen: false)
           : RefreshIndicator(
               onRefresh: () async {
                 await ref.read(nodesProvider.notifier).fetchNodes();
