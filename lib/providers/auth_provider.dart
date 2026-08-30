@@ -45,6 +45,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> checkAuthStatus() async {
     state = state.copyWith(isLoading: true);
+    // Allow preloader wave animation to display smoothly on startup
+    await Future.delayed(const Duration(milliseconds: 1500));
     try {
       final token = await _storage.getToken();
       if (token != null && token.isNotEmpty) {
