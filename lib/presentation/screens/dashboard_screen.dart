@@ -334,13 +334,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(13),
           border: Border.all(
-            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0),
+            color: isSelected ? const Color(0xFF0F172A) : const Color(0xFFE2E8F0),
             width: isSelected ? 1.6 : 1,
           ),
           boxShadow: [
             if (isSelected) ...[
               BoxShadow(
-                color: const Color(0xFF2563EB).withOpacity(0.12),
+                color: Colors.black.withOpacity(0.08),
                 blurRadius: 10,
                 offset: const Offset(0, 3),
               ),
@@ -375,13 +375,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ),
             const SizedBox(width: 7),
 
-            // Active Dot Indicator (Apple HIG Style)
+            // Active Dot Indicator (Black Accent)
             if (isSelected) ...[
               Container(
                 width: 5.5,
                 height: 5.5,
                 decoration: const BoxDecoration(
-                  color: Color(0xFF2563EB),
+                  color: Color(0xFF0F172A),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -404,16 +404,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFFEFF6FF) : const Color(0xFFF1F5F9),
+                color: isSelected ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(8),
-                border: isSelected ? Border.all(color: const Color(0xFFDBEAFE), width: 0.8) : null,
               ),
               child: Text(
                 '$count',
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
-                  color: isSelected ? const Color(0xFF1D4ED8) : const Color(0xFF94A3B8),
+                  color: isSelected ? Colors.white : const Color(0xFF94A3B8),
                 ),
               ),
             ),
