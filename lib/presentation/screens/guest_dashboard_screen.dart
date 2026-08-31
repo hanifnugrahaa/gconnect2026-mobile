@@ -329,25 +329,18 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF00B200), Color(0xFF008F00)],
-                )
-              : null,
-          color: isSelected ? null : Colors.white,
+          color: isSelected ? const Color(0xFFECFDF5) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFF008F00) : const Color(0xFFE2E8F0),
-            width: isSelected ? 1.2 : 1,
+            color: isSelected ? const Color(0xFF86EFAC) : const Color(0xFFE2E8F0),
+            width: isSelected ? 1.3 : 1,
           ),
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: const Color(0xFF008F00).withOpacity(0.25),
-                blurRadius: 8,
-                offset: const Offset(0, 3),
+                color: const Color(0xFF008F00).withOpacity(0.08),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
               )
             else
               BoxShadow(
@@ -364,13 +357,13 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
             Container(
               padding: const EdgeInsets.all(4.5),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.white.withOpacity(0.20) : accentColor.withOpacity(0.12),
+                color: isSelected ? const Color(0xFFD1FAE5) : accentColor.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Icon(
                 icon,
                 size: 13,
-                color: isSelected ? Colors.white : accentColor,
+                color: isSelected ? const Color(0xFF007A00) : accentColor,
               ),
             ),
             const SizedBox(width: 7),
@@ -381,7 +374,7 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
-                color: isSelected ? Colors.white : const Color(0xFF334155),
+                color: isSelected ? const Color(0xFF007A00) : const Color(0xFF475569),
                 letterSpacing: -0.2,
               ),
             ),
@@ -391,7 +384,7 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.white.withOpacity(0.25) : const Color(0xFFF1F5F9),
+                color: isSelected ? const Color(0xFFD1FAE5) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -399,7 +392,7 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
-                  color: isSelected ? Colors.white : const Color(0xFF64748B),
+                  color: isSelected ? const Color(0xFF007A00) : const Color(0xFF64748B),
                 ),
               ),
             ),
