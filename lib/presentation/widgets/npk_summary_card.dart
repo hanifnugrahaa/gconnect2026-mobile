@@ -24,6 +24,13 @@ class NpkSummaryCard extends StatelessWidget {
     return 'Nutrisi Seimbang';
   }
 
+  Color _getStatusDotColor() {
+    final status = _getNpkStatus();
+    if (status.contains('Tinggi') || status.contains('Kritis')) return const Color(0xFFE11D48);
+    if (status.contains('Rendah') || status.contains('Defisiensi')) return const Color(0xFFF59E0B);
+    return const Color(0xFF10B981);
+  }
+
   Color _getStatusBg() {
     final status = _getNpkStatus();
     if (status.contains('Tinggi') || status.contains('Kritis')) return const Color(0xFFFFF1F2);
@@ -53,18 +60,24 @@ class NpkSummaryCard extends StatelessWidget {
     final kRatio = (kVal / total) * 100;
 
     final statusText = _getNpkStatus();
+    final dotColor = _getStatusDotColor();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10.5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.025),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: const Color(0xFF008F00).withOpacity(0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
           ),
         ],
       ),
@@ -79,13 +92,13 @@ class NpkSummaryCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(4.5),
+                    padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       color: const Color(0xFFECFDF5),
-                      borderRadius: BorderRadius.circular(8),
+                      shape: BoxShape.circle,
                       border: Border.all(color: const Color(0xFFA7F3D0), width: 0.8),
                     ),
-                    child: const Icon(LucideIcons.flaskConical, size: 14, color: Color(0xFF008F00)),
+                    child: const Icon(LucideIcons.flaskConical, size: 13, color: Color(0xFF008F00)),
                   ),
                   const SizedBox(width: 7),
                   Column(
@@ -95,13 +108,13 @@ class NpkSummaryCard extends StatelessWidget {
                         'Keseimbangan Hara NPK',
                         style: TextStyle(
                           fontSize: 12.5,
-                          fontWeight: FontWeight.w800,
+                          fontWeight: FontWeight.w900,
                           color: Color(0xFF0F172A),
-                          letterSpacing: -0.2,
+                          letterSpacing: -0.3,
                         ),
                       ),
                       Text(
-                        'Rasio N:P:K (${nVal.toStringAsFixed(0)}:${pVal.toStringAsFixed(0)}:${kVal.toStringAsFixed(0)})',
+                        'Rasio N:P:K  ${nVal.toStringAsFixed(0)} : ${pVal.toStringAsFixed(0)} : ${kVal.toStringAsFixed(0)}',
                         style: const TextStyle(
                           fontSize: 9.5,
                           fontWeight: FontWeight.w600,
@@ -113,65 +126,88 @@ class NpkSummaryCard extends StatelessWidget {
                 ],
               ),
 
-              // Status Badge
+              // Status Badge with Live Dot
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 7.5, vertical: 3),
                 decoration: BoxDecoration(
                   color: _getStatusBg(),
-                  borderRadius: BorderRadius.circular(7),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: _getStatusBorder(), width: 0.8),
                 ),
-                child: Text(
-                  statusText,
-                  style: TextStyle(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w800,
-                    color: _getStatusText(),
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 5,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: dotColor,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: dotColor.withOpacity(0.5),
+                            blurRadius: 3,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 4.5),
+                    Text(
+                      statusText,
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        color: _getStatusText(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 9),
+          const SizedBox(height: 8.5),
 
-          // 3 Column Values with Web Nuance Styling
+          // 3 Column Values with Aesthetic Micro-Pills
           Row(
             children: [
-              _buildNpkItem(
+              _buildAestheticNpkItem(
+                symbol: 'N',
                 title: 'Nitrogen',
                 val: nVal,
                 percent: nRatio,
+                accentColor: const Color(0xFF059669),
                 bgColor: const Color(0xFFF0FDF4),
                 borderColor: const Color(0xFFBBF7D0),
-                textColor: const Color(0xFF047857),
               ),
-              const SizedBox(width: 7),
-              _buildNpkItem(
-                title: 'Phosphor',
+              const SizedBox(width: 6.5),
+              _buildAestheticNpkItem(
+                symbol: 'P',
+                title: 'Fosfor',
                 val: pVal,
                 percent: pRatio,
+                accentColor: const Color(0xFF2563EB),
                 bgColor: const Color(0xFFEFF6FF),
                 borderColor: const Color(0xFFBFDBFE),
-                textColor: const Color(0xFF1D4ED8),
               ),
-              const SizedBox(width: 7),
-              _buildNpkItem(
+              const SizedBox(width: 6.5),
+              _buildAestheticNpkItem(
+                symbol: 'K',
                 title: 'Kalium',
                 val: kVal,
                 percent: kRatio,
+                accentColor: const Color(0xFF9333EA),
                 bgColor: const Color(0xFFFAF5FF),
                 borderColor: const Color(0xFFE9D5FF),
-                textColor: const Color(0xFF7E22CE),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 7.5),
 
           // Segmented Distribution Bar
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: SizedBox(
-              height: 5.5,
+              height: 5,
               child: Row(
                 children: [
                   Expanded(
@@ -207,55 +243,74 @@ class NpkSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildNpkItem({
+  Widget _buildAestheticNpkItem({
+    required String symbol,
     required String title,
     required double val,
     required double percent,
+    required Color accentColor,
     required Color bgColor,
     required Color borderColor,
-    required Color textColor,
   }) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5.5),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
         decoration: BoxDecoration(
           color: bgColor,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: borderColor),
+          borderRadius: BorderRadius.circular(11),
+          border: Border.all(color: borderColor, width: 0.9),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Top Row: Chemical Symbol Chip + Title + Percent Badge
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w800,
-                    color: textColor,
-                  ),
-                ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 3.5, vertical: 0.5),
+                  width: 14,
+                  height: 14,
+                  alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: textColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(4),
+                    color: accentColor,
+                    shape: BoxShape.circle,
                   ),
                   child: Text(
-                    '${percent.toStringAsFixed(0)}%',
-                    style: TextStyle(
+                    symbol,
+                    style: const TextStyle(
                       fontSize: 8,
                       fontWeight: FontWeight.w900,
-                      color: textColor,
+                      color: Colors.white,
+                      height: 1,
                     ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.w800,
+                      color: accentColor,
+                    ),
+                  ),
+                ),
+                Text(
+                  '${percent.toStringAsFixed(0)}%',
+                  style: TextStyle(
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.w900,
+                    color: accentColor,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 2.5),
+            const SizedBox(height: 3),
+
+            // Bottom Row: Value + Unit
             Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
@@ -266,14 +321,14 @@ class NpkSummaryCard extends StatelessWidget {
                     fontSize: 14.5,
                     fontWeight: FontWeight.w900,
                     color: Color(0xFF0F172A),
-                    letterSpacing: -0.3,
+                    letterSpacing: -0.4,
                   ),
                 ),
                 const SizedBox(width: 2.5),
                 const Text(
                   'mg/kg',
                   style: TextStyle(
-                    fontSize: 8.5,
+                    fontSize: 8,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF64748B),
                   ),
