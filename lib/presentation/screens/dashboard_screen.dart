@@ -329,27 +329,22 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7.5),
+        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(13),
+          color: isSelected ? const Color(0xFF0F172A) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? const Color(0xFF0F172A) : const Color(0xFFE2E8F0),
-            width: isSelected ? 1.6 : 1,
+            width: 1.2,
           ),
           boxShadow: [
-            if (isSelected) ...[
+            if (isSelected)
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 10,
+                color: const Color(0xFF0F172A).withOpacity(0.25),
+                blurRadius: 8,
                 offset: const Offset(0, 3),
-              ),
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 4,
-                offset: const Offset(0, 1),
-              ),
-            ] else
+              )
+            else
               BoxShadow(
                 color: Colors.black.withOpacity(0.02),
                 blurRadius: 4,
@@ -364,47 +359,34 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Container(
               padding: const EdgeInsets.all(4.5),
               decoration: BoxDecoration(
-                color: isSelected ? accentColor.withOpacity(0.16) : accentColor.withOpacity(0.09),
-                borderRadius: BorderRadius.circular(7),
+                color: isSelected ? Colors.white.withOpacity(0.16) : accentColor.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(6),
               ),
               child: Icon(
                 icon,
                 size: 13,
-                color: accentColor,
+                color: isSelected ? Colors.white : accentColor,
               ),
             ),
             const SizedBox(width: 7),
-
-            // Active Dot Indicator (Black Accent)
-            if (isSelected) ...[
-              Container(
-                width: 5.5,
-                height: 5.5,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF0F172A),
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 5.5),
-            ],
 
             // Category Label
             Text(
               label,
               style: TextStyle(
                 fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
-                color: isSelected ? const Color(0xFF0F172A) : const Color(0xFF64748B),
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
+                color: isSelected ? Colors.white : const Color(0xFF475569),
                 letterSpacing: -0.2,
               ),
             ),
-            const SizedBox(width: 6.5),
+            const SizedBox(width: 6),
 
             // Number Badge
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF0F172A) : const Color(0xFFF1F5F9),
+                color: isSelected ? Colors.white.withOpacity(0.22) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -412,7 +394,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
-                  color: isSelected ? Colors.white : const Color(0xFF94A3B8),
+                  color: isSelected ? Colors.white : const Color(0xFF64748B),
                 ),
               ),
             ),
