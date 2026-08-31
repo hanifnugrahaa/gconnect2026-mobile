@@ -327,22 +327,27 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7.5),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0F172A) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(13),
           border: Border.all(
-            color: isSelected ? const Color(0xFF0F172A) : const Color(0xFFE2E8F0),
-            width: isSelected ? 1.2 : 1,
+            color: isSelected ? const Color(0xFF2563EB) : const Color(0xFFE2E8F0),
+            width: isSelected ? 1.6 : 1,
           ),
           boxShadow: [
-            if (isSelected)
+            if (isSelected) ...[
               BoxShadow(
-                color: const Color(0xFF0F172A).withOpacity(0.20),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              )
-            else
+                color: const Color(0xFF2563EB).withOpacity(0.12),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
+            ] else
               BoxShadow(
                 color: Colors.black.withOpacity(0.02),
                 blurRadius: 4,
@@ -353,46 +358,60 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Category Icon with Accent Container
+            // Category Icon Container
             Container(
               padding: const EdgeInsets.all(4.5),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.white.withOpacity(0.16) : accentColor.withOpacity(0.10),
-                borderRadius: BorderRadius.circular(6),
+                color: isSelected ? accentColor.withOpacity(0.16) : accentColor.withOpacity(0.09),
+                borderRadius: BorderRadius.circular(7),
               ),
               child: Icon(
                 icon,
                 size: 13,
-                color: isSelected ? Colors.white : accentColor,
+                color: accentColor,
               ),
             ),
             const SizedBox(width: 7),
+
+            // Active Dot Indicator (Apple HIG Style)
+            if (isSelected) ...[
+              Container(
+                width: 5.5,
+                height: 5.5,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF2563EB),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 5.5),
+            ],
 
             // Category Label
             Text(
               label,
               style: TextStyle(
                 fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
-                color: isSelected ? Colors.white : const Color(0xFF475569),
+                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
+                color: isSelected ? const Color(0xFF0F172A) : const Color(0xFF64748B),
                 letterSpacing: -0.2,
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 6.5),
 
             // Number Badge
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.white.withOpacity(0.22) : const Color(0xFFF1F5F9),
+                color: isSelected ? const Color(0xFFEFF6FF) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(8),
+                border: isSelected ? Border.all(color: const Color(0xFFDBEAFE), width: 0.8) : null,
               ),
               child: Text(
                 '$count',
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
-                  color: isSelected ? Colors.white : const Color(0xFF64748B),
+                  color: isSelected ? const Color(0xFF1D4ED8) : const Color(0xFF94A3B8),
                 ),
               ),
             ),
