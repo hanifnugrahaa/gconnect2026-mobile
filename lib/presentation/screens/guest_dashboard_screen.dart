@@ -232,7 +232,7 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // 3. Category Filter Selector Pills with Dynamic Counts
+                      // 3. Modern Category Filter Selector Pills with Icons & Badges
                       Builder(
                         builder: (context) {
                           final sensors = selectedNode.sensors;
@@ -244,13 +244,37 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               children: [
-                                _buildCategoryPill('all', 'Semua (${sensors.length})'),
+                                _buildCategoryPill(
+                                  id: 'all',
+                                  label: 'Semua',
+                                  count: sensors.length,
+                                  icon: LucideIcons.layers,
+                                  accentColor: const Color(0xFF6366F1),
+                                ),
                                 const SizedBox(width: 8),
-                                _buildCategoryPill('npk', 'Unsur NPK ($npkCount)'),
+                                _buildCategoryPill(
+                                  id: 'npk',
+                                  label: 'Unsur NPK',
+                                  count: npkCount,
+                                  icon: LucideIcons.leaf,
+                                  accentColor: const Color(0xFF008F00),
+                                ),
                                 const SizedBox(width: 8),
-                                _buildCategoryPill('soil', 'Kondisi Tanah ($soilCount)'),
+                                _buildCategoryPill(
+                                  id: 'soil',
+                                  label: 'Kondisi Tanah',
+                                  count: soilCount,
+                                  icon: LucideIcons.droplets,
+                                  accentColor: const Color(0xFFD97706),
+                                ),
                                 const SizedBox(width: 8),
-                                _buildCategoryPill('environment', 'IoT & Lingkungan ($envCount)'),
+                                _buildCategoryPill(
+                                  id: 'environment',
+                                  label: 'IoT & Lingkungan',
+                                  count: envCount,
+                                  icon: LucideIcons.cpu,
+                                  accentColor: const Color(0xFF0284C7),
+                                ),
                               ],
                             ),
                           );
@@ -289,28 +313,97 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
     );
   }
 
-  Widget _buildCategoryPill(String id, String label) {
+  Widget _buildCategoryPill({
+    required String id,
+    required String label,
+    required int count,
+    required IconData icon,
+    required Color accentColor,
+  }) {
     final isSelected = _selectedCategory == id;
-    return InkWell(
+
+    return GestureDetector(
       onTap: () => setState(() => _selectedCategory = id),
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? AppColors.primary : AppColors.border),
-          boxShadow: isSelected
-              ? [BoxShadow(color: AppColors.primary.withOpacity(0.2), blurRadius: 6, offset: const Offset(0, 2))]
+          gradient: isSelected
+              ? const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF00B200), Color(0xFF008F00)],
+                )
               : null,
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 11.5,
-            fontWeight: FontWeight.w700,
-            color: isSelected ? Colors.white : AppColors.textSecondary,
+          color: isSelected ? null : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF008F00) : const Color(0xFFE2E8F0),
+            width: isSelected ? 1.2 : 1,
           ),
+          boxShadow: [
+            if (isSelected)
+              BoxShadow(
+                color: const Color(0xFF008F00).withOpacity(0.25),
+                blurRadius: 8,
+                offset: const Offset(0, 3),
+              )
+            else
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 1),
+              ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Category Icon with Accent Container
+            Container(
+              padding: const EdgeInsets.all(4.5),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.white.withOpacity(0.20) : accentColor.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Icon(
+                icon,
+                size: 13,
+                color: isSelected ? Colors.white : accentColor,
+              ),
+            ),
+            const SizedBox(width: 7),
+
+            // Category Label
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
+                color: isSelected ? Colors.white : const Color(0xFF334155),
+                letterSpacing: -0.2,
+              ),
+            ),
+            const SizedBox(width: 6),
+
+            // Number Badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.white.withOpacity(0.25) : const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '$count',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  color: isSelected ? Colors.white : const Color(0xFF64748B),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
