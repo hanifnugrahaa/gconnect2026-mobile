@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -32,6 +31,20 @@ class NpkSummaryCard extends StatelessWidget {
     return const Color(0xFF10B981);
   }
 
+  Color _getStatusBg() {
+    final status = _getNpkStatus();
+    if (status.contains('Tinggi') || status.contains('Kritis')) return const Color(0xFFFFF1F2);
+    if (status.contains('Rendah') || status.contains('Defisiensi')) return const Color(0xFFFEF3C7);
+    return const Color(0xFFECFDF5);
+  }
+
+  Color _getStatusBorder() {
+    final status = _getNpkStatus();
+    if (status.contains('Tinggi') || status.contains('Kritis')) return const Color(0xFFFECDD3);
+    if (status.contains('Rendah') || status.contains('Defisiensi')) return const Color(0xFFFDE68A);
+    return const Color(0xFFA7F3D0);
+  }
+
   Color _getStatusText() {
     final status = _getNpkStatus();
     if (status.contains('Tinggi') || status.contains('Kritis')) return const Color(0xFFBE123C);
@@ -49,334 +62,100 @@ class NpkSummaryCard extends StatelessWidget {
     final statusText = _getNpkStatus();
     final dotColor = _getStatusDotColor();
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.68),
-                Colors.white.withOpacity(0.42),
-                const Color(0xFFECFDF5).withOpacity(0.55),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.92),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF10B981).withOpacity(0.12),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-              BoxShadow(
-                color: const Color(0xFF38BDF8).withOpacity(0.08),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: const Color(0xFFE2E8F0),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.025),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
-          child: Stack(
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header Row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Liquid Ambient Glow Blob 1 (Top Left Emerald)
-              Positioned(
-                left: -15,
-                top: -15,
-                child: Container(
-                  width: 90,
-                  height: 90,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF34D399).withOpacity(0.28),
-                  ),
-                ),
-              ),
-
-              // Liquid Ambient Glow Blob 2 (Top Right Sky Blue)
-              Positioned(
-                right: -10,
-                top: -10,
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF60A5FA).withOpacity(0.24),
-                  ),
-                ),
-              ),
-
-              // Liquid Ambient Glow Blob 3 (Bottom Purple)
-              Positioned(
-                right: 40,
-                bottom: -20,
-                child: Container(
-                  width: 85,
-                  height: 85,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFC084FC).withOpacity(0.20),
-                  ),
-                ),
-              ),
-
-              // Top Glossy Light Highlight Sheen
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 42,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withOpacity(0.50),
-                        Colors.white.withOpacity(0.0),
-                      ],
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFECFDF5),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: const Color(0xFFA7F3D0),
+                        width: 0.8,
+                      ),
                     ),
+                    child: const Icon(LucideIcons.flaskConical, size: 13, color: Color(0xFF008F00)),
                   ),
-                ),
+                  const SizedBox(width: 7),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Keseimbangan Hara NPK',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF0F172A),
+                          letterSpacing: -0.3,
+                        ),
+                      ),
+                      Text(
+                        'Rasio N:P:K  ${nVal.toStringAsFixed(0)} : ${pVal.toStringAsFixed(0)} : ${kVal.toStringAsFixed(0)}',
+                        style: const TextStyle(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF64748B),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
 
-              // Main Card Content
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10.5),
-                child: Column(
+              // Clean Status Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7.5, vertical: 3),
+                decoration: BoxDecoration(
+                  color: _getStatusBg(),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(
+                    color: _getStatusBorder(),
+                    width: 0.8,
+                  ),
+                ),
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header Row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(5.5),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Colors.white.withOpacity(0.95),
-                                    const Color(0xFFD1FAE5).withOpacity(0.85),
-                                  ],
-                                ),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1.2,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF008F00).withOpacity(0.20),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(LucideIcons.flaskConical, size: 13, color: Color(0xFF008F00)),
-                            ),
-                            const SizedBox(width: 7),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Keseimbangan Hara NPK',
-                                  style: TextStyle(
-                                    fontSize: 12.5,
-                                    fontWeight: FontWeight.w900,
-                                    color: Color(0xFF0F172A),
-                                    letterSpacing: -0.3,
-                                  ),
-                                ),
-                                Text(
-                                  'Rasio N:P:K  ${nVal.toStringAsFixed(0)} : ${pVal.toStringAsFixed(0)} : ${kVal.toStringAsFixed(0)}',
-                                  style: const TextStyle(
-                                    fontSize: 9.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF475569),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        // Liquid Glass Status Badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.5, vertical: 3.5),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.white.withOpacity(0.90),
-                                Colors.white.withOpacity(0.70),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 1.2,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: dotColor.withOpacity(0.20),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 6,
-                                height: 6,
-                                decoration: BoxDecoration(
-                                  color: dotColor,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: dotColor.withOpacity(0.8),
-                                      blurRadius: 5,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                statusText,
-                                style: TextStyle(
-                                  fontSize: 9.5,
-                                  fontWeight: FontWeight.w900,
-                                  color: _getStatusText(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    Container(
+                      width: 5.5,
+                      height: 5.5,
+                      decoration: BoxDecoration(
+                        color: dotColor,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                    const SizedBox(height: 8.5),
-
-                    // 3 Column Values with Liquid Glass Micro-Pills
-                    Row(
-                      children: [
-                        _buildLiquidGlassItem(
-                          symbol: 'N',
-                          title: 'Nitrogen',
-                          val: nVal,
-                          percent: nRatio,
-                          accentColor: const Color(0xFF059669),
-                          tintColor: const Color(0xFF10B981),
-                        ),
-                        const SizedBox(width: 6.5),
-                        _buildLiquidGlassItem(
-                          symbol: 'P',
-                          title: 'Fosfor',
-                          val: pVal,
-                          percent: pRatio,
-                          accentColor: const Color(0xFF2563EB),
-                          tintColor: const Color(0xFF3B82F6),
-                        ),
-                        const SizedBox(width: 6.5),
-                        _buildLiquidGlassItem(
-                          symbol: 'K',
-                          title: 'Kalium',
-                          val: kVal,
-                          percent: kRatio,
-                          accentColor: const Color(0xFF9333EA),
-                          tintColor: const Color(0xFFA855F7),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 7.5),
-
-                    // Liquid Segmented Distribution Track
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: Container(
-                        height: 5.5,
-                        padding: const EdgeInsets.all(0.5),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.55),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.80),
-                            width: 0.8,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: nRatio.round().clamp(1, 100),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFF34D399), Color(0xFF059669)],
-                                  ),
-                                  borderRadius: BorderRadius.circular(3),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFF10B981).withOpacity(0.3),
-                                      blurRadius: 3,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 2),
-                            Expanded(
-                              flex: pRatio.round().clamp(1, 100),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFF60A5FA), Color(0xFF2563EB)],
-                                  ),
-                                  borderRadius: BorderRadius.circular(3),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFF3B82F6).withOpacity(0.3),
-                                      blurRadius: 3,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 2),
-                            Expanded(
-                              flex: kRatio.round().clamp(1, 100),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFFC084FC), Color(0xFF9333EA)],
-                                  ),
-                                  borderRadius: BorderRadius.circular(3),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFA855F7).withOpacity(0.3),
-                                      blurRadius: 3,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    const SizedBox(width: 4.5),
+                    Text(
+                      statusText,
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.w800,
+                        color: _getStatusText(),
                       ),
                     ),
                   ],
@@ -384,55 +163,106 @@ class NpkSummaryCard extends StatelessWidget {
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 8.5),
+
+          // 3 Column Values with Clean Micro-Pills
+          Row(
+            children: [
+              _buildCleanNpkItem(
+                symbol: 'N',
+                title: 'Nitrogen',
+                val: nVal,
+                percent: nRatio,
+                accentColor: const Color(0xFF059669),
+                bgColor: const Color(0xFFF0FDF4),
+                borderColor: const Color(0xFFBBF7D0),
+              ),
+              const SizedBox(width: 6.5),
+              _buildCleanNpkItem(
+                symbol: 'P',
+                title: 'Fosfor',
+                val: pVal,
+                percent: pRatio,
+                accentColor: const Color(0xFF2563EB),
+                bgColor: const Color(0xFFEFF6FF),
+                borderColor: const Color(0xFFBFDBFE),
+              ),
+              const SizedBox(width: 6.5),
+              _buildCleanNpkItem(
+                symbol: 'K',
+                title: 'Kalium',
+                val: kVal,
+                percent: kRatio,
+                accentColor: const Color(0xFF9333EA),
+                bgColor: const Color(0xFFFAF5FF),
+                borderColor: const Color(0xFFE9D5FF),
+              ),
+            ],
+          ),
+          const SizedBox(height: 7.5),
+
+          // Clean Segmented Distribution Track
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: SizedBox(
+              height: 5,
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: nRatio.round().clamp(1, 100),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF10B981),
+                        borderRadius: BorderRadius.horizontal(left: Radius.circular(3)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Expanded(
+                    flex: pRatio.round().clamp(1, 100),
+                    child: Container(color: const Color(0xFF3B82F6)),
+                  ),
+                  const SizedBox(width: 2),
+                  Expanded(
+                    flex: kRatio.round().clamp(1, 100),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFA855F7),
+                        borderRadius: BorderRadius.horizontal(right: Radius.circular(3)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildLiquidGlassItem({
+  Widget _buildCleanNpkItem({
     required String symbol,
     required String title,
     required double val,
     required double percent,
     required Color accentColor,
-    required Color tintColor,
+    required Color bgColor,
+    required Color borderColor,
   }) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5.5),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withOpacity(0.78),
-              tintColor.withOpacity(0.12),
-              Colors.white.withOpacity(0.55),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: Colors.white,
-            width: 1.2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withOpacity(0.10),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 3,
-              offset: const Offset(0, 1),
-            ),
-          ],
+          color: bgColor,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: borderColor, width: 0.9),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Top Row: Chemical Symbol Avatar + Title + Percent Chip
+            // Top Row: Chemical Symbol + Title + Percent Badge
             Row(
               children: [
                 Container(
@@ -440,20 +270,8 @@ class NpkSummaryCard extends StatelessWidget {
                   height: 14,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        accentColor,
-                        tintColor,
-                      ],
-                    ),
+                    color: accentColor,
                     shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: accentColor.withOpacity(0.40),
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
                   ),
                   child: Text(
                     symbol,
@@ -473,7 +291,7 @@ class NpkSummaryCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 9.5,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w800,
                       color: accentColor,
                     ),
                   ),
