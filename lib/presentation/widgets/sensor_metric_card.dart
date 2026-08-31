@@ -1,6 +1,4 @@
-﻿import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../core/constants.dart';
+import 'package:flutter/material.dart';
 import '../../models/sensor_model.dart';
 
 class SensorMetricCard extends StatelessWidget {
@@ -13,155 +11,257 @@ class SensorMetricCard extends StatelessWidget {
     this.value,
   });
 
-  IconData _getIconForSensor(String name, String type) {
-    final lower = name.toLowerCase();
-    if (lower.contains('nitrogen') || lower.contains('phosphor') || lower.contains('kalium') || lower.contains('npk')) {
-      return LucideIcons.flaskConical;
+  _MetricCardVisualState _getCardState(double? val) {
+    if (val == null) {
+      return _MetricCardVisualState(
+        gradient: const [Color(0xFF64748B), Color(0xFF475569), Color(0xFF334155)],
+        shadowColor: const Color(0x22000000),
+        statusText: 'OFFLINE',
+        isAlert: false,
+        rangeText: '',
+      );
     }
-    if (lower.contains('kelembaban') || lower.contains('moisture')) {
-      return LucideIcons.droplets;
-    }
-    if (lower.contains('suhu') || lower.contains('temp')) {
-      return LucideIcons.thermometer;
-    }
-    if (lower.contains('ph')) {
-      return LucideIcons.testTube;
-    }
-    if (lower.contains('ec') || lower.contains('konduktivitas')) {
-      return LucideIcons.zap;
-    }
-    if (lower.contains('panel') || lower.contains('box') || lower.contains('enclosure')) {
-      return LucideIcons.cpu;
-    }
-    if (lower.contains('baterai') || lower.contains('battery')) {
-      return LucideIcons.batteryCharging;
-    }
-    return LucideIcons.activity;
-  }
 
-  Color _getColorForSensor(String name) {
-    final lower = name.toLowerCase();
-    if (lower.contains('nitrogen')) return AppColors.nitrogen;
-    if (lower.contains('phosphor')) return AppColors.phosphorus;
-    if (lower.contains('kalium')) return AppColors.potassium;
-    if (lower.contains('kelembaban')) return AppColors.moisture;
-    if (lower.contains('suhu')) return AppColors.temperature;
-    if (lower.contains('ph')) return AppColors.primary;
-    return AppColors.primary;
-  }
+    final min = sensor.minThreshold;
+    final max = sensor.maxThreshold;
 
-  String _getStatusLabel(double? val) {
-    if (val == null) return 'Offline';
-    if (sensor.maxThreshold != null && val > sensor.maxThreshold!) return 'Tinggi';
-    if (sensor.minThreshold != null && val < sensor.minThreshold!) return 'Rendah';
-    return 'Optimal';
-  }
+    String rangeStr = '';
+    if (min != null || max != null) {
+      final minStr = min != null ? (min % 1 == 0 ? min.toInt().toString() : min.toStringAsFixed(1)) : '0';
+      final maxStr = max != null ? (max % 1 == 0 ? max.toInt().toString() : max.toStringAsFixed(1)) : '∞';
+      rangeStr = '$minStr–$maxStr';
+    }
 
-  Color _getStatusColor(double? val) {
-    if (val == null) return AppColors.textMuted;
-    if (sensor.maxThreshold != null && val > sensor.maxThreshold!) return AppColors.warning;
-    if (sensor.minThreshold != null && val < sensor.minThreshold!) return AppColors.danger;
-    return AppColors.success;
+    // 1. Alert: Rendah (Below Min Threshold) - Sky / Ice Blue
+    if (min != null && val < min) {
+      return _MetricCardVisualState(
+        gradient: const [Color(0xFF38BDF8), Color(0xFF0284C7), Color(0xFF0369A1)],
+        shadowColor: const Color(0x330284C7),
+        statusText: 'RENDAH',
+        isAlert: true,
+        rangeText: rangeStr,
+      );
+    }
+
+    // 2. Alert: Tinggi (Above Max Threshold) - Coral Rose Alert
+    if (max != null && val > max) {
+      return _MetricCardVisualState(
+        gradient: const [Color(0xFFFB7185), Color(0xFFF43F5E), Color(0xFFE11D48)],
+        shadowColor: const Color(0x33E11D48),
+        statusText: 'TINGGI',
+        isAlert: true,
+        rangeText: rangeStr,
+      );
+    }
+
+    // 3. Optimal / Normal (Within Safe Range) - Brand Green #008F00
+    return _MetricCardVisualState(
+      gradient: const [Color(0xFF00B200), Color(0xFF008F00), Color(0xFF006400)],
+      shadowColor: const Color(0x33008F00),
+      statusText: 'OPTIMAL',
+      isAlert: false,
+      rangeText: rangeStr,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = _getColorForSensor(sensor.name);
-    final iconData = _getIconForSensor(sensor.name, sensor.type);
-    final formattedVal = value != null ? value!.toStringAsFixed(1) : '--';
-    final statusLabel = _getStatusLabel(value);
-    final statusColor = _getStatusColor(value);
+    final state = _getCardState(value);
+    final formattedVal = value != null ? (value! % 1 == 0 ? value!.toInt().toString() : value!.toStringAsFixed(1)) : '--';
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: state.gradient,
+        ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: state.shadowColor,
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
         ],
+        border: Border.all(
+          color: Colors.white.withOpacity(0.20),
+          width: 1,
+        ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Stack(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(iconData, color: accentColor, size: 16),
+          // Ambient Decorative Circle
+          Positioned(
+            right: -15,
+            bottom: -15,
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.08),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
-                decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  statusLabel,
-                  style: TextStyle(
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w800,
-                    color: statusColor,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            sensor.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 2),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
+
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                formattedVal,
-                style: const TextStyle(
-                  fontSize: 21,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.textPrimary,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              if (sensor.unit.isNotEmpty) ...[
-                const SizedBox(width: 3),
-                Expanded(
-                  child: Text(
-                    sensor.unit,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textMuted,
+              // Top Row: Sensor Title & Glassmorphism Status Capsule
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      sensor.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white.withOpacity(0.95),
+                        height: 1.15,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withOpacity(0.25),
+                            offset: const Offset(0, 1),
+                            blurRadius: 2,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 6),
+
+                  // Glassmorphism Status Capsule
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 6.5,
+                      vertical: state.isAlert ? 2.5 : 3.5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.25),
+                      borderRadius: BorderRadius.circular(state.isAlert ? 8 : 20),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.40),
+                        width: 0.8,
+                      ),
+                    ),
+                    child: state.isAlert
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                state.statusText,
+                                style: const TextStyle(
+                                  fontSize: 8.5,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  letterSpacing: 0.3,
+                                  height: 1,
+                                ),
+                              ),
+                              if (state.rangeText.isNotEmpty) ...[
+                                Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 1.5),
+                                  width: 24,
+                                  height: 0.5,
+                                  color: Colors.white.withOpacity(0.35),
+                                ),
+                                Text(
+                                  state.rangeText,
+                                  style: TextStyle(
+                                    fontSize: 7.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white.withOpacity(0.95),
+                                    height: 1,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          )
+                        : Text(
+                            state.statusText,
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              letterSpacing: 0.3,
+                              height: 1,
+                            ),
+                          ),
+                  ),
+                ],
+              ),
+
+              // Bottom Row: Large Value + Unit
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    formattedVal,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.25),
+                          offset: const Offset(0, 1.5),
+                          blurRadius: 3,
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (sensor.unit.isNotEmpty) ...[
+                    const SizedBox(width: 3.5),
+                    Expanded(
+                      child: Text(
+                        sensor.unit,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white.withOpacity(0.90),
+                          shadows: [
+                            Shadow(
+                              color: Colors.black.withOpacity(0.2),
+                              offset: const Offset(0, 1),
+                              blurRadius: 1,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ],
           ),
         ],
       ),
     );
   }
+}
+
+class _MetricCardVisualState {
+  final List<Color> gradient;
+  final Color shadowColor;
+  final String statusText;
+  final bool isAlert;
+  final String rangeText;
+
+  _MetricCardVisualState({
+    required this.gradient,
+    required this.shadowColor,
+    required this.statusText,
+    required this.isAlert,
+    required this.rangeText,
+  });
 }

@@ -33,21 +33,36 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   List<SensorModel> _filterSensors(List<SensorModel> all) {
-    if (_selectedCategory == 'all') return all;
-    return all.filter((s) {
+    return _filterSensorsWithCat(all, _selectedCategory);
+  }
+
+  List<SensorModel> _filterSensorsWithCat(List<SensorModel> all, String cat) {
+    if (cat == 'all') return all;
+    return all.where((s) {
       final name = s.name.toLowerCase();
       final type = s.type.toLowerCase();
-      if (_selectedCategory == 'npk') {
+      if (cat == 'npk') {
         return name.contains('nitrogen') || name.contains('phosphor') || name.contains('kalium') || name.contains('npk') || type.contains('npk');
       }
-      if (_selectedCategory == 'soil') {
+      if (cat == 'soil') {
         return name.contains('kelembaban') || name.contains('moisture') || name.contains('ph') || name.contains('ec') || name.contains('suhu tanah') || type.contains('soil');
       }
-      if (_selectedCategory == 'environment') {
+      if (cat == 'environment') {
         return name.contains('panel') || name.contains('box') || name.contains('enclosure') || name.contains('udara') || name.contains('baterai') || name.contains('suhu lingkungan') || type.contains('env');
       }
       return true;
     }).toList();
+  }
+
+  double? _getSensorVal(List<SensorModel> sensors, List<String> keywords, WidgetRef ref) {
+    for (final s in sensors) {
+      final name = s.name.toLowerCase();
+      final type = s.type.toLowerCase();
+      if (keywords.any((k) => name.contains(k) || type.contains(k))) {
+        return ref.watch(telemetryProvider.notifier).getLiveSensorValue(s);
+      }
+    }
+    return null;
   }
 
   @override
@@ -103,19 +118,38 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       ),
                     const SizedBox(height: 14),
 
-                    // 2. Three Top Executive Hero KPI Cards (Interactive Carousel)
+                    // 2. Three Top Executive Hero KPI Cards (Interactive Carousel with Live Telemetry Binding)
                     if (selectedNode != null) ...[
-                      SizedBox(
-                        height: 145,
-                        child: PageView(
-                          controller: _pageController,
-                          onPageChanged: (idx) => setState(() => _heroCardIndex = idx),
-                          children: const [
-                            NpkSummaryCard(nVal: 68.7, pVal: 35.9, kVal: 28.4),
-                            SoilConditionCard(avgMoisture: 58.4, phVal: 6.8, ecVal: 1240, soilTemp: 26.5),
-                            ThermalIotCard(enclosureTemp: 32.4, ambientTemp: 28.1, ambientHumidity: 72, batteryVolt: 12.6),
-                          ],
-                        ),
+                      Builder(
+                        builder: (context) {
+                          final sensors = selectedNode.sensors;
+                          final n = _getSensorVal(sensors, ['nitrogen'], ref) ?? 68.7;
+                          final p = _getSensorVal(sensors, ['phosphor', 'fosfor', 'phosphorus'], ref) ?? 35.9;
+                          final k = _getSensorVal(sensors, ['kalium', 'potassium'], ref) ?? 28.4;
+
+                          final soilMoist = _getSensorVal(sensors, ['kelembaban rata', 'kelembaban tanah 1', 'lengas', 'kelembaban'], ref) ?? 58.4;
+                          final ph = _getSensorVal(sensors, ['ph'], ref) ?? 6.8;
+                          final ec = _getSensorVal(sensors, ['ec', 'salinitas', 'konduktivitas'], ref) ?? 1240.0;
+                          final soilTemp = _getSensorVal(sensors, ['suhu tanah'], ref) ?? 26.5;
+
+                          final encTemp = _getSensorVal(sensors, ['suhu dalam', 'casing', 'enclosure', 'box', 'panel'], ref) ?? 32.4;
+                          final ambTemp = _getSensorVal(sensors, ['suhu luar', 'udara', 'ambient', 'suhu lingkungan'], ref) ?? 28.1;
+                          final ambHum = _getSensorVal(sensors, ['kelembaban udara', 'lembab luar', 'humidity'], ref) ?? 72.0;
+                          final battery = _getSensorVal(sensors, ['baterai', 'battery', 'tegangan'], ref) ?? 12.6;
+
+                          return SizedBox(
+                            height: 148,
+                            child: PageView(
+                              controller: _pageController,
+                              onPageChanged: (idx) => setState(() => _heroCardIndex = idx),
+                              children: [
+                                NpkSummaryCard(nVal: n, pVal: p, kVal: k),
+                                SoilConditionCard(avgMoisture: soilMoist, phVal: ph, ecVal: ec, soilTemp: soilTemp),
+                                ThermalIotCard(enclosureTemp: encTemp, ambientTemp: ambTemp, ambientHumidity: ambHum, batteryVolt: battery),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 8),
 
@@ -138,20 +172,29 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      // 3. Category Filter Selector Pills
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            _buildCategoryPill('all', 'Semua (${selectedNode.sensors.length})'),
-                            const SizedBox(width: 8),
-                            _buildCategoryPill('npk', 'Unsur NPK (3)'),
-                            const SizedBox(width: 8),
-                            _buildCategoryPill('soil', 'Kondisi Tanah (5)'),
-                            const SizedBox(width: 8),
-                            _buildCategoryPill('environment', 'IoT & Lingkungan (4)'),
-                          ],
-                        ),
+                      // 3. Category Filter Selector Pills with Dynamic Counts
+                      Builder(
+                        builder: (context) {
+                          final sensors = selectedNode.sensors;
+                          final npkCount = _filterSensorsWithCat(sensors, 'npk').length;
+                          final soilCount = _filterSensorsWithCat(sensors, 'soil').length;
+                          final envCount = _filterSensorsWithCat(sensors, 'environment').length;
+
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                _buildCategoryPill('all', 'Semua (${sensors.length})'),
+                                const SizedBox(width: 8),
+                                _buildCategoryPill('npk', 'Unsur NPK ($npkCount)'),
+                                const SizedBox(width: 8),
+                                _buildCategoryPill('soil', 'Kondisi Tanah ($soilCount)'),
+                                const SizedBox(width: 8),
+                                _buildCategoryPill('environment', 'IoT & Lingkungan ($envCount)'),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 16),
 
@@ -171,7 +214,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             itemCount: filtered.length,
                             itemBuilder: (context, idx) {
                               final sensor = filtered[idx];
-                              final liveVal = ref.read(telemetryProvider.notifier).getLiveSensorValue(sensor);
+                              final liveVal = ref.watch(telemetryProvider.notifier).getLiveSensorValue(sensor);
                               return SensorMetricCard(sensor: sensor, value: liveVal);
                             },
                           );
