@@ -331,16 +331,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFECFDF5) : Colors.white,
+          color: isSelected ? const Color(0xFF0F172A) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFF86EFAC) : const Color(0xFFE2E8F0),
-            width: isSelected ? 1.3 : 1,
+            color: isSelected ? const Color(0xFF0F172A) : const Color(0xFFE2E8F0),
+            width: isSelected ? 1.2 : 1,
           ),
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: const Color(0xFF008F00).withOpacity(0.08),
+                color: const Color(0xFF0F172A).withOpacity(0.20),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               )
@@ -359,13 +359,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Container(
               padding: const EdgeInsets.all(4.5),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFFD1FAE5) : accentColor.withOpacity(0.10),
+                color: isSelected ? Colors.white.withOpacity(0.16) : accentColor.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Icon(
                 icon,
                 size: 13,
-                color: isSelected ? const Color(0xFF007A00) : accentColor,
+                color: isSelected ? Colors.white : accentColor,
               ),
             ),
             const SizedBox(width: 7),
@@ -376,7 +376,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700,
-                color: isSelected ? const Color(0xFF007A00) : const Color(0xFF475569),
+                color: isSelected ? Colors.white : const Color(0xFF475569),
                 letterSpacing: -0.2,
               ),
             ),
@@ -386,7 +386,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFFD1FAE5) : const Color(0xFFF1F5F9),
+                color: isSelected ? Colors.white.withOpacity(0.22) : const Color(0xFFF1F5F9),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -394,7 +394,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
-                  color: isSelected ? const Color(0xFF007A00) : const Color(0xFF64748B),
+                  color: isSelected ? Colors.white : const Color(0xFF64748B),
                 ),
               ),
             ),
