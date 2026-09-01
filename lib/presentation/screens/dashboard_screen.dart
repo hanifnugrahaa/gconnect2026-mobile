@@ -331,16 +331,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFF1F5F9) : Colors.white,
+          color: isSelected ? const Color(0xFFE2E8F0) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xFFCBD5E1) : const Color(0xFFE2E8F0),
-            width: isSelected ? 1.4 : 1,
+            color: isSelected ? const Color(0xFF94A3B8) : const Color(0xFFE2E8F0),
+            width: isSelected ? 1.5 : 1,
           ),
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: const Color(0xFF64748B).withOpacity(0.18),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               )
@@ -362,7 +362,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 color: isSelected ? Colors.white : accentColor.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: isSelected ? const Color(0xFFE2E8F0) : Colors.transparent,
+                  color: isSelected ? const Color(0xFFCBD5E1) : Colors.transparent,
                   width: 0.8,
                 ),
               ),
@@ -393,7 +393,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 color: isSelected ? Colors.white : const Color(0xFFF8FAFC),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: isSelected ? const Color(0xFFCBD5E1) : const Color(0xFFE2E8F0),
+                  color: isSelected ? const Color(0xFF94A3B8) : const Color(0xFFE2E8F0),
                   width: 0.8,
                 ),
               ),
@@ -401,7 +401,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 '$count',
                 style: TextStyle(
                   fontSize: 10,
-                  fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
+                  fontWeight: FontWeight.w900,
                   color: isSelected ? const Color(0xFF0F172A) : const Color(0xFF94A3B8),
                 ),
               ),
