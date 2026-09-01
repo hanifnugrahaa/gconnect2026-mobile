@@ -89,43 +89,21 @@ class NpkSummaryCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // 1. 3D Cucumber Plant Ambient Vignette
+              // 1. 3D Cucumber Plant Illustration (No circle orbs)
               Positioned(
-                right: -10,
-                bottom: -15,
+                right: -6,
+                top: -8,
+                bottom: -8,
                 child: Opacity(
-                  opacity: 0.26,
+                  opacity: 0.35,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
                     child: Image.asset(
                       'assets/images/cucumber_3d.jpg',
-                      width: 130,
-                      height: 130,
+                      width: 145,
                       fit: BoxFit.cover,
                     ),
                   ),
-                ),
-              ),
-
-              // 2. 3D Liquid Glass Orb 1 (Top Left Emerald Orb)
-              Positioned(
-                left: -12,
-                top: -12,
-                child: _build3dLiquidGlassOrb(
-                  size: 84,
-                  primaryColor: const Color(0xFF10B981),
-                  highlightColor: const Color(0xFF6EE7B7),
-                ),
-              ),
-
-              // 3. 3D Liquid Glass Orb 2 (Top Right Sapphire Blue Orb)
-              Positioned(
-                right: -8,
-                top: -8,
-                child: _build3dLiquidGlassOrb(
-                  size: 74,
-                  primaryColor: const Color(0xFF3B82F6),
-                  highlightColor: const Color(0xFF93C5FD),
                 ),
               ),
 
@@ -512,100 +490,6 @@ class NpkSummaryCard extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _build3dLiquidGlassOrb({
-    required double size,
-    required Color primaryColor,
-    required Color highlightColor,
-  }) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        // 1. 3D Volumetric Sphere Radial Gradient with Off-center Light Source
-        gradient: RadialGradient(
-          center: const Alignment(-0.38, -0.38),
-          radius: 0.85,
-          colors: [
-            Colors.white.withOpacity(0.88), // Specular light reflection on top-left
-            highlightColor.withOpacity(0.55), // Luminous refraction body
-            primaryColor.withOpacity(0.38),    // Core ambient body
-            primaryColor.withOpacity(0.12),    // Outer edge falloff
-          ],
-          stops: const [0.0, 0.28, 0.65, 1.0],
-        ),
-        // 2. Liquid Glass Diffuse Ambient Glow & Drop Shadow
-        boxShadow: [
-          BoxShadow(
-            color: primaryColor.withOpacity(0.35),
-            blurRadius: size * 0.35,
-            spreadRadius: size * 0.04,
-            offset: const Offset(3, 6),
-          ),
-          BoxShadow(
-            color: Colors.white.withOpacity(0.70),
-            blurRadius: size * 0.18,
-            offset: const Offset(-2, -2),
-          ),
-        ],
-        // 3. Specular Rim Glass Border
-        border: Border.all(
-          color: Colors.white.withOpacity(0.65),
-          width: 1.2,
-        ),
-      ),
-      child: ClipOval(
-        child: Stack(
-          children: [
-            // Inner Specular Light Glint Arc (Apple VisionOS / Liquid Glass highlight)
-            Positioned(
-              top: size * 0.12,
-              left: size * 0.16,
-              child: Transform.rotate(
-                angle: -0.42,
-                child: Container(
-                  width: size * 0.36,
-                  height: size * 0.16,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.elliptical(size * 0.36, size * 0.16)),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withOpacity(0.90),
-                        Colors.white.withOpacity(0.0),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // Bottom-Right Refractive Counter-Glow
-            Positioned(
-              bottom: size * 0.08,
-              right: size * 0.12,
-              child: Container(
-                width: size * 0.30,
-                height: size * 0.14,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.elliptical(size * 0.30, size * 0.14)),
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      highlightColor.withOpacity(0.50),
-                      Colors.transparent,
-                    ],
-                  ),
-                ),
-              ),
             ),
           ],
         ),
