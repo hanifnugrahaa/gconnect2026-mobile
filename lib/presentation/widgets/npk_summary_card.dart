@@ -89,45 +89,36 @@ class NpkSummaryCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // Liquid Ambient Glow Blob 1 (Top Left Emerald)
+              // 3D Liquid Glass Orb 1 (Top Left Emerald Orb)
               Positioned(
-                left: -15,
-                top: -15,
-                child: Container(
-                  width: 90,
-                  height: 90,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF34D399).withOpacity(0.28),
-                  ),
+                left: -12,
+                top: -12,
+                child: _build3dLiquidGlassOrb(
+                  size: 88,
+                  primaryColor: const Color(0xFF10B981),
+                  highlightColor: const Color(0xFF6EE7B7),
                 ),
               ),
 
-              // Liquid Ambient Glow Blob 2 (Top Right Sky Blue)
+              // 3D Liquid Glass Orb 2 (Top Right Sapphire Blue Orb)
               Positioned(
-                right: -10,
-                top: -10,
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF60A5FA).withOpacity(0.24),
-                  ),
+                right: -8,
+                top: -8,
+                child: _build3dLiquidGlassOrb(
+                  size: 78,
+                  primaryColor: const Color(0xFF3B82F6),
+                  highlightColor: const Color(0xFF93C5FD),
                 ),
               ),
 
-              // Liquid Ambient Glow Blob 3 (Bottom Purple)
+              // 3D Liquid Glass Orb 3 (Bottom Amethyst Purple Orb)
               Positioned(
-                right: 40,
-                bottom: -20,
-                child: Container(
-                  width: 85,
-                  height: 85,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFC084FC).withOpacity(0.20),
-                  ),
+                right: 36,
+                bottom: -18,
+                child: _build3dLiquidGlassOrb(
+                  size: 84,
+                  primaryColor: const Color(0xFFA855F7),
+                  highlightColor: const Color(0xFFE9D5FF),
                 ),
               ),
 
@@ -514,6 +505,100 @@ class NpkSummaryCard extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _build3dLiquidGlassOrb({
+    required double size,
+    required Color primaryColor,
+    required Color highlightColor,
+  }) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        // 1. 3D Volumetric Sphere Radial Gradient with Off-center Light Source
+        gradient: RadialGradient(
+          center: const Alignment(-0.38, -0.38),
+          radius: 0.85,
+          colors: [
+            Colors.white.withOpacity(0.88), // Specular light reflection on top-left
+            highlightColor.withOpacity(0.55), // Luminous refraction body
+            primaryColor.withOpacity(0.38),    // Core ambient body
+            primaryColor.withOpacity(0.12),    // Outer edge falloff
+          ],
+          stops: const [0.0, 0.28, 0.65, 1.0],
+        ),
+        // 2. Liquid Glass Diffuse Ambient Glow & Drop Shadow
+        boxShadow: [
+          BoxShadow(
+            color: primaryColor.withOpacity(0.35),
+            blurRadius: size * 0.35,
+            spreadRadius: size * 0.04,
+            offset: const Offset(3, 6),
+          ),
+          BoxShadow(
+            color: Colors.white.withOpacity(0.70),
+            blurRadius: size * 0.18,
+            offset: const Offset(-2, -2),
+          ),
+        ],
+        // 3. Specular Rim Glass Border
+        border: Border.all(
+          color: Colors.white.withOpacity(0.65),
+          width: 1.2,
+        ),
+      ),
+      child: ClipOval(
+        child: Stack(
+          children: [
+            // Inner Specular Light Glint Arc (Apple VisionOS / Liquid Glass highlight)
+            Positioned(
+              top: size * 0.12,
+              left: size * 0.16,
+              child: Transform.rotate(
+                angle: -0.42,
+                child: Container(
+                  width: size * 0.36,
+                  height: size * 0.16,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.elliptical(size * 0.36, size * 0.16)),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withOpacity(0.90),
+                        Colors.white.withOpacity(0.0),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Bottom-Right Refractive Counter-Glow
+            Positioned(
+              bottom: size * 0.08,
+              right: size * 0.12,
+              child: Container(
+                width: size * 0.30,
+                height: size * 0.14,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.elliptical(size * 0.30, size * 0.14)),
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      highlightColor.withOpacity(0.50),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
