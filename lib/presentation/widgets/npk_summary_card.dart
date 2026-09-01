@@ -89,36 +89,43 @@ class NpkSummaryCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // 3D Liquid Glass Orb 1 (Top Left Emerald Orb)
+              // 1. 3D Cucumber Plant Ambient Vignette
+              Positioned(
+                right: -10,
+                bottom: -15,
+                child: Opacity(
+                  opacity: 0.26,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      'assets/images/cucumber_3d.jpg',
+                      width: 130,
+                      height: 130,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+
+              // 2. 3D Liquid Glass Orb 1 (Top Left Emerald Orb)
               Positioned(
                 left: -12,
                 top: -12,
                 child: _build3dLiquidGlassOrb(
-                  size: 88,
+                  size: 84,
                   primaryColor: const Color(0xFF10B981),
                   highlightColor: const Color(0xFF6EE7B7),
                 ),
               ),
 
-              // 3D Liquid Glass Orb 2 (Top Right Sapphire Blue Orb)
+              // 3. 3D Liquid Glass Orb 2 (Top Right Sapphire Blue Orb)
               Positioned(
                 right: -8,
                 top: -8,
                 child: _build3dLiquidGlassOrb(
-                  size: 78,
+                  size: 74,
                   primaryColor: const Color(0xFF3B82F6),
                   highlightColor: const Color(0xFF93C5FD),
-                ),
-              ),
-
-              // 3D Liquid Glass Orb 3 (Bottom Amethyst Purple Orb)
-              Positioned(
-                right: 36,
-                bottom: -18,
-                child: _build3dLiquidGlassOrb(
-                  size: 84,
-                  primaryColor: const Color(0xFFA855F7),
-                  highlightColor: const Color(0xFFE9D5FF),
                 ),
               ),
 

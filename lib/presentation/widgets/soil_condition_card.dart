@@ -77,36 +77,43 @@ class SoilConditionCard extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // 3D Liquid Glass Orb 1 (Top Left Sky Cyan Orb)
+              // 1. 3D Chili Pepper Plant Ambient Vignette
+              Positioned(
+                right: -10,
+                bottom: -15,
+                child: Opacity(
+                  opacity: 0.25,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset(
+                      'assets/images/chili_3d.jpg',
+                      width: 130,
+                      height: 130,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+
+              // 2. 3D Liquid Glass Orb 1 (Top Left Sky Cyan Orb)
               Positioned(
                 left: -12,
                 top: -12,
                 child: _build3dLiquidGlassOrb(
-                  size: 88,
+                  size: 84,
                   primaryColor: const Color(0xFF0284C7),
                   highlightColor: const Color(0xFF7DD3FC),
                 ),
               ),
 
-              // 3D Liquid Glass Orb 2 (Top Right Emerald Mint Orb)
+              // 3. 3D Liquid Glass Orb 2 (Top Right Emerald Mint Orb)
               Positioned(
                 right: -8,
                 top: -8,
                 child: _build3dLiquidGlassOrb(
-                  size: 78,
+                  size: 74,
                   primaryColor: const Color(0xFF10B981),
                   highlightColor: const Color(0xFF6EE7B7),
-                ),
-              ),
-
-              // 3D Liquid Glass Orb 3 (Bottom Amber Earth Orb)
-              Positioned(
-                right: 46,
-                bottom: -18,
-                child: _build3dLiquidGlassOrb(
-                  size: 84,
-                  primaryColor: const Color(0xFFD97706),
-                  highlightColor: const Color(0xFFFDE68A),
                 ),
               ),
 
