@@ -4,6 +4,7 @@ class NodeModel {
   final String id;
   final String nodeCode;
   final String name;
+  final String? location;
   final String? description;
   final String status;
   final double? latitude;
@@ -14,6 +15,7 @@ class NodeModel {
     required this.id,
     required this.nodeCode,
     required this.name,
+    this.location,
     this.description,
     required this.status,
     this.latitude,
@@ -27,6 +29,7 @@ class NodeModel {
       id: json['id']?.toString() ?? '',
       nodeCode: json['node_id'] ?? json['node_code'] ?? '',
       name: json['name'] ?? 'Stasiun Agro',
+      location: json['location'] ?? json['address'],
       description: json['description'],
       status: json['status'] ?? 'offline',
       latitude: (json['latitude'] as num?)?.toDouble(),
