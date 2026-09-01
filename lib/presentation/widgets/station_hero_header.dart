@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -275,154 +276,214 @@ class StationHeroHeader extends StatelessWidget {
         ? node.location!
         : 'Lahan Pertanian Terpadu';
 
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: () => _showStationPickerBottomSheet(context),
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10.5),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFE2E8F0),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.025),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(18),
+          child: InkWell(
+            onTap: () => _showStationPickerBottomSheet(context),
+            borderRadius: BorderRadius.circular(18),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10.5),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withOpacity(0.80),
+                    Colors.white.withOpacity(0.50),
+                    const Color(0xFFECFDF5).withOpacity(0.45),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.92),
+                  width: 1.4,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: (isOnline ? const Color(0xFF10B981) : const Color(0xFFE11D48)).withOpacity(0.08),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Line 1: [🟢 Pulse Dot] + [Nama Node] + [NODE001] ---------> [🔽 Chevron]
-              Row(
+              child: Stack(
                 children: [
-                  // Pulse Status Dot
-                  Container(
-                    width: 7.5,
-                    height: 7.5,
-                    decoration: BoxDecoration(
-                      color: isOnline ? const Color(0xFF10B981) : const Color(0xFFE11D48),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: (isOnline ? const Color(0xFF10B981) : const Color(0xFFE11D48)).withOpacity(0.5),
-                          blurRadius: 4,
+                  // Top Glossy Light Highlight Sheen
+                  Positioned(
+                    top: -10.5,
+                    left: -14,
+                    right: -14,
+                    height: 24,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.white.withOpacity(0.60),
+                            Colors.white.withOpacity(0.0),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
 
-                  // Node Name (Truncated if long)
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            node.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w900,
-                              color: Color(0xFF0F172A),
-                              letterSpacing: -0.3,
+                  // Card Content
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Line 1: [🟢 Pulse Dot] + [Nama Node] + [NODE001] ---------> [🔽 Chevron]
+                      Row(
+                        children: [
+                          // Glowing Pulse Status Dot
+                          Container(
+                            width: 7.5,
+                            height: 7.5,
+                            decoration: BoxDecoration(
+                              color: isOnline ? const Color(0xFF10B981) : const Color(0xFFE11D48),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (isOnline ? const Color(0xFF10B981) : const Color(0xFFE11D48)).withOpacity(0.65),
+                                  blurRadius: 6,
+                                  spreadRadius: 1,
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 6.5),
+                          const SizedBox(width: 8),
 
-                        // Node Code Pill
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF1F5F9),
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                              color: const Color(0xFFE2E8F0),
-                              width: 0.8,
+                          // Node Name (Truncated if long)
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    node.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF0F172A),
+                                      letterSpacing: -0.3,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 6.5),
+
+                                // Frosted Node Code Capsule
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.85),
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.95),
+                                      width: 0.8,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.03),
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Text(
+                                    displayCode,
+                                    style: const TextStyle(
+                                      fontSize: 9.5,
+                                      fontWeight: FontWeight.w900,
+                                      color: Color(0xFF047857),
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Text(
-                            displayCode,
-                            style: const TextStyle(
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w800,
+                          const SizedBox(width: 6),
+
+                          // Frosted Glass Selector Indicator Button
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.80),
+                              borderRadius: BorderRadius.circular(7),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.95),
+                                width: 0.8,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              LucideIcons.chevronDown,
+                              size: 13,
                               color: Color(0xFF475569),
-                              letterSpacing: 0.2,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-
-                  // Selector Indicator (Chevron Down)
-                  Container(
-                    padding: const EdgeInsets.all(3.5),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: const Color(0xFFE2E8F0),
-                        width: 0.8,
+                        ],
                       ),
-                    ),
-                    child: const Icon(
-                      LucideIcons.chevronDown,
-                      size: 13.5,
-                      color: Color(0xFF64748B),
-                    ),
+                      const SizedBox(height: 5.5),
+
+                      // Line 2: [📍 Lokasi] • [🕒 WIB HH:mm]
+                      Row(
+                        children: [
+                          const Icon(LucideIcons.mapPin, size: 11.5, color: Color(0xFF64748B)),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              locationText,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF475569),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          const Text(
+                            '•',
+                            style: TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
+                          ),
+                          const SizedBox(width: 6),
+                          const Icon(LucideIcons.clock, size: 10.5, color: Color(0xFF64748B)),
+                          const SizedBox(width: 3.5),
+                          Text(
+                            'WIB $nowFormatted',
+                            style: const TextStyle(
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF475569),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
-              const SizedBox(height: 5.5),
-
-              // Line 2: [📍 Lokasi] • [🕒 WIB HH:mm]
-              Row(
-                children: [
-                  const Icon(LucideIcons.mapPin, size: 11.5, color: Color(0xFF64748B)),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      locationText,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF64748B),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  const Text(
-                    '•',
-                    style: TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
-                  ),
-                  const SizedBox(width: 6),
-                  const Icon(LucideIcons.clock, size: 10.5, color: Color(0xFF64748B)),
-                  const SizedBox(width: 3.5),
-                  Text(
-                    'WIB $nowFormatted',
-                    style: const TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF64748B),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),
