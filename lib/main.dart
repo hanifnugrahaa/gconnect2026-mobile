@@ -7,7 +7,24 @@ import 'presentation/screens/guest_dashboard_screen.dart';
 import 'presentation/screens/main_nav_screen.dart';
 import 'presentation/widgets/app_preloader.dart';
 
+import 'package:flutter/foundation.dart';
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  FlutterError.onError = (FlutterErrorDetails details) {
+    if (kDebugMode) {
+      debugPrint('[FlutterError] ${details.exceptionAsString()}');
+    }
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    if (kDebugMode) {
+      debugPrint('[PlatformError] $error');
+    }
+    return true; // prevent crash
+  };
+
   runApp(
     const ProviderScope(
       child: GConnectMobileApp(),

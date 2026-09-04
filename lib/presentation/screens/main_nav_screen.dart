@@ -1,7 +1,7 @@
+﻿import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
-import '../../core/constants.dart';
 import 'dashboard_screen.dart';
 import 'analysis_screen.dart';
 import 'map_screen.dart';
@@ -25,41 +25,126 @@ class _MainNavScreenState extends ConsumerState<MainNavScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF040E0A),
+      extendBody: true, // Allows body to go behind floating dock
       body: IndexedStack(
         index: _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(24, 0, 24, 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(36),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.45),
+                blurRadius: 28,
+                spreadRadius: 2,
+                offset: const Offset(0, 10),
+              ),
+              BoxShadow(
+                color: const Color(0xFF10B981).withOpacity(0.18),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(36),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      const Color(0xFF0F2D20).withOpacity(0.78),
+                      const Color(0xFF061A12).withOpacity(0.90),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(36),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.18),
+                    width: 1.2,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _buildNavItem(
+                      index: 0,
+                      icon: LucideIcons.layoutDashboard,
+                      label: 'Dashboard',
+                    ),
+                    _buildNavItem(
+                      index: 1,
+                      icon: LucideIcons.lineChart,
+                      label: 'Analisis',
+                    ),
+                    _buildNavItem(
+                      index: 2,
+                      icon: LucideIcons.map,
+                      label: 'Peta Lahan',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
-          backgroundColor: Colors.white,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: AppColors.textMuted,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700, fontSize: 11),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 11),
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(LucideIcons.layoutDashboard, size: 20),
-              activeIcon: Icon(LucideIcons.layoutDashboard, size: 20, color: AppColors.primary),
-              label: 'Dashboard',
+      ),
+    );
+  }
+
+  Widget _buildNavItem({
+    required int index,
+    required IconData icon,
+    required String label,
+  }) {
+    final isSelected = _currentIndex == index;
+
+    return GestureDetector(
+      onTap: () => setState(() => _currentIndex = index),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF10B981) : Colors.transparent,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF10B981).withOpacity(0.40),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 19,
+              color: isSelected ? const Color(0xFF042F1E) : const Color(0xFF94A3B8),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(LucideIcons.lineChart, size: 20),
-              activeIcon: Icon(LucideIcons.lineChart, size: 20, color: AppColors.primary),
-              label: 'Analisis',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(LucideIcons.map, size: 20),
-              activeIcon: Icon(LucideIcons.map, size: 20, color: AppColors.primary),
-              label: 'Peta Lahan',
-            ),
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF042F1E),
+                ),
+              ),
+            ],
           ],
         ),
       ),

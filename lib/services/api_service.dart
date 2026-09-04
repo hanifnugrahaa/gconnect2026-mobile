@@ -103,7 +103,7 @@ class ApiService {
   }
 
   Future<List<TelemetryFeedModel>> getTelemetryHistory(String nodeId, {String range = '1d'}) async {
-    final uri = Uri.parse('$_baseUrl/telemetry/history?node_id=$nodeId&range=$range');
+    final uri = Uri.parse('$_baseUrl/nodes/$nodeId/telemetry/history?range=$range');
     final headers = await _getHeaders(requireAuth: false);
     final response = await http.get(uri, headers: headers);
 
@@ -112,7 +112,8 @@ class ApiService {
       final feeds = (data['feeds'] as List<dynamic>? ?? []);
       return feeds.map((f) => TelemetryFeedModel.fromJson(f as Map<String, dynamic>)).toList();
     } else {
-      throw Exception('Gagal memuat data histori telemetri.');
+      // Return empty list instead of throwing to prevent app crashes when node has no feeds yet
+      return [];
     }
   }
 }
