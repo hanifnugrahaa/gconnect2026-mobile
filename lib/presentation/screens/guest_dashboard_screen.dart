@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants.dart';
-import '../../providers/auth_provider.dart';
 import '../../providers/nodes_provider.dart';
 import '../../providers/telemetry_provider.dart';
 import '../../models/sensor_model.dart';
@@ -11,10 +11,13 @@ import '../widgets/npk_summary_card.dart';
 import '../widgets/soil_condition_card.dart';
 import '../widgets/thermal_iot_card.dart';
 import '../widgets/sensor_metric_card.dart';
+import '../widgets/ai_suggestion_card.dart';
 import '../widgets/app_preloader.dart';
 
 class GuestDashboardScreen extends ConsumerStatefulWidget {
-  const GuestDashboardScreen({super.key});
+  final VoidCallback? onLoginTap;
+
+  const GuestDashboardScreen({super.key, this.onLoginTap});
 
   @override
   ConsumerState<GuestDashboardScreen> createState() => _GuestDashboardScreenState();
@@ -29,10 +32,6 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
-  }
-
-  List<SensorModel> _filterSensors(List<SensorModel> all) {
-    return _filterSensorsWithCat(all, _selectedCategory);
   }
 
   List<SensorModel> _filterSensorsWithCat(List<SensorModel> all, String cat) {
@@ -67,357 +66,258 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final nodesState = ref.watch(nodesProvider);
-    final telemetryState = ref.watch(telemetryProvider);
     final selectedNode = nodesState.selectedNode;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            const Icon(LucideIcons.sprout, color: AppColors.primary, size: 22),
-            const SizedBox(width: 8),
-            Text(AppConstants.appName, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-            const SizedBox(width: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.primaryBg,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(color: AppColors.primaryLight.withOpacity(0.4)),
-              ),
-              child: const Text('Mode Tamu', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primary)),
-            ),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                ref.read(authProvider.notifier).goToLogin();
-              },
-              icon: const Icon(LucideIcons.logIn, size: 14),
-              label: const Text('Login', style: TextStyle(fontSize: 12)),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
+      backgroundColor: const Color(0xFF040E0A),
+      body: Stack(
+        children: [
+          // ── 1. Full-screen Farm Wallpaper Background ───────────────────────
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/farm_bg.jpg',
+              fit: BoxFit.cover,
             ),
           ),
-        ],
-      ),
-      body: nodesState.isLoading
-          ? const AppPreloader(fullScreen: false)
-          : RefreshIndicator(
-              onRefresh: () async {
-                await ref.read(nodesProvider.notifier).fetchNodes();
-                if (selectedNode != null) {
-                  await ref.read(telemetryProvider.notifier).fetchHistory(selectedNode.id);
-                }
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Elegant Midnight Obsidian VIP Guest CTA Banner
-                    Material(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(16),
-                      child: InkWell(
-                        onTap: () {
-                          ref.read(authProvider.notifier).goToLogin();
-                        },
-                        borderRadius: BorderRadius.circular(16),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.white.withOpacity(0.14),
-                              width: 1,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFF0F172A).withOpacity(0.18),
-                                blurRadius: 16,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              // Sparkles Icon Capsule with Emerald Glow
-                              Container(
-                                padding: const EdgeInsets.all(9),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      const Color(0xFF10B981).withOpacity(0.24),
-                                      const Color(0xFF059669).withOpacity(0.12),
-                                    ],
-                                  ),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color(0xFF34D399).withOpacity(0.35),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: const Icon(
-                                  LucideIcons.sparkles,
-                                  color: Color(0xFF34D399),
-                                  size: 16,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
 
-                              // Text Description
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Text(
-                                          'Akses Fitur Penuh',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w900,
-                                            fontSize: 13,
-                                            color: Colors.white,
-                                            letterSpacing: -0.2,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 5.5, vertical: 1.5),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFF10B981).withOpacity(0.20),
-                                            borderRadius: BorderRadius.circular(4),
-                                            border: Border.all(
-                                              color: const Color(0xFF34D399).withOpacity(0.35),
-                                              width: 0.8,
-                                            ),
-                                          ),
-                                          child: const Text(
-                                            'PRO',
-                                            style: TextStyle(
-                                              fontSize: 8.5,
-                                              fontWeight: FontWeight.w900,
-                                              color: Color(0xFF34D399),
-                                              letterSpacing: 0.3,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 2.5),
-                                    const Text(
-                                      'Login untuk membuka Analisis Grafik, Peta Lahan & Kontrol Aktuator.',
-                                      style: TextStyle(
-                                        fontSize: 10.5,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color(0xFF94A3B8),
-                                        height: 1.25,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-
-                              // Sleek Action Button
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 9.5, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF10B981),
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFF10B981).withOpacity(0.35),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: const Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Login',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w800,
-                                        fontSize: 11,
-                                      ),
-                                    ),
-                                    SizedBox(width: 3),
-                                    Icon(
-                                      LucideIcons.arrowRight,
-                                      size: 11,
-                                      color: Colors.white,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // 1. Station Hero Header
-                    if (selectedNode != null)
-                      StationHeroHeader(
-                        node: selectedNode,
-                        allNodes: nodesState.nodes,
-                        onSelectNode: (id) {
-                          ref.read(nodesProvider.notifier).selectNode(id);
-                          ref.read(telemetryProvider.notifier).fetchHistory(id);
-                        },
-                      ),
-                    const SizedBox(height: 14),
-
-                    // 2. Three Top Executive Hero KPI Cards (Interactive Carousel with Live Telemetry Binding)
-                    if (selectedNode != null) ...[
-                      Builder(
-                        builder: (context) {
-                          final sensors = selectedNode.sensors;
-                          final n = _getSensorVal(sensors, ['nitrogen'], ref) ?? 68.7;
-                          final p = _getSensorVal(sensors, ['phosphor', 'fosfor', 'phosphorus'], ref) ?? 35.9;
-                          final k = _getSensorVal(sensors, ['kalium', 'potassium'], ref) ?? 28.4;
-
-                          final soilMoist = _getSensorVal(sensors, ['kelembaban rata', 'kelembaban tanah 1', 'lengas', 'kelembaban'], ref) ?? 58.4;
-                          final ph = _getSensorVal(sensors, ['ph'], ref) ?? 6.8;
-                          final ec = _getSensorVal(sensors, ['ec', 'salinitas', 'konduktivitas'], ref) ?? 1240.0;
-                          final soilTemp = _getSensorVal(sensors, ['suhu tanah'], ref) ?? 26.5;
-
-                          final encTemp = _getSensorVal(sensors, ['suhu dalam', 'casing', 'enclosure', 'box', 'panel'], ref) ?? 32.4;
-                          final ambTemp = _getSensorVal(sensors, ['suhu luar', 'udara', 'ambient', 'suhu lingkungan'], ref) ?? 28.1;
-                          final ambHum = _getSensorVal(sensors, ['kelembaban udara', 'lembab luar', 'humidity'], ref) ?? 72.0;
-                          final battery = _getSensorVal(sensors, ['baterai', 'battery', 'tegangan'], ref) ?? 12.6;
-
-                          return SizedBox(
-                            height: 148,
-                            child: PageView(
-                              controller: _pageController,
-                              onPageChanged: (idx) => setState(() => _heroCardIndex = idx),
-                              children: [
-                                NpkSummaryCard(nVal: n, pVal: p, kVal: k),
-                                SoilConditionCard(avgMoisture: soilMoist, phVal: ph, ecVal: ec, soilTemp: soilTemp),
-                                ThermalIotCard(enclosureTemp: encTemp, ambientTemp: ambTemp, ambientHumidity: ambHum, batteryVolt: battery),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Carousel Dots Indicator
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(3, (i) {
-                          final isCurrent = i == _heroCardIndex;
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 250),
-                            margin: const EdgeInsets.symmetric(horizontal: 3),
-                            width: isCurrent ? 18 : 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: isCurrent ? AppColors.primary : AppColors.border,
-                              borderRadius: BorderRadius.circular(3),
-                            ),
-                          );
-                        }),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // 3. Modern Category Filter Selector Pills with Icons & Badges
-                      Builder(
-                        builder: (context) {
-                          final sensors = selectedNode.sensors;
-                          final npkCount = _filterSensorsWithCat(sensors, 'npk').length;
-                          final soilCount = _filterSensorsWithCat(sensors, 'soil').length;
-                          final envCount = _filterSensorsWithCat(sensors, 'environment').length;
-
-                          return SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                _buildCategoryPill(
-                                  id: 'all',
-                                  label: 'Semua',
-                                  count: sensors.length,
-                                  icon: LucideIcons.layers,
-                                  accentColor: const Color(0xFF6366F1),
-                                ),
-                                const SizedBox(width: 8),
-                                _buildCategoryPill(
-                                  id: 'npk',
-                                  label: 'Unsur NPK',
-                                  count: npkCount,
-                                  icon: LucideIcons.leaf,
-                                  accentColor: const Color(0xFF008F00),
-                                ),
-                                const SizedBox(width: 8),
-                                _buildCategoryPill(
-                                  id: 'soil',
-                                  label: 'Kondisi Tanah',
-                                  count: soilCount,
-                                  icon: LucideIcons.droplets,
-                                  accentColor: const Color(0xFFD97706),
-                                ),
-                                const SizedBox(width: 8),
-                                _buildCategoryPill(
-                                  id: 'environment',
-                                  label: 'IoT & Lingkungan',
-                                  count: envCount,
-                                  icon: LucideIcons.cpu,
-                                  accentColor: const Color(0xFF0284C7),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 16),
-
-                      // 4. Categorized Sensor Metric Grid
-                      Builder(
-                        builder: (context) {
-                          final filtered = _filterSensors(selectedNode.sensors);
-                          return GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 1.25,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
-                            ),
-                            itemCount: filtered.length,
-                            itemBuilder: (context, idx) {
-                              final sensor = filtered[idx];
-                              final liveVal = ref.watch(telemetryProvider.notifier).getLiveSensorValue(sensor);
-                              return SensorMetricCard(sensor: sensor, value: liveVal);
-                            },
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 24),
-                    ],
+          // ── 2. Dark Vignette Gradient Overlay ──────────────────────────────
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0x99000000),
+                    Color(0x44051B12),
+                    Color(0xF0040E0A),
                   ],
+                  stops: [0.0, 0.35, 0.85],
                 ),
               ),
             ),
+          ),
+
+          // ── 3. Scrollable Main Content ────────────────────────────────────
+          SafeArea(
+            bottom: false,
+            child: nodesState.isLoading
+                ? const AppPreloader(fullScreen: false)
+                : RefreshIndicator(
+                    color: const Color(0xFF10B981),
+                    backgroundColor: const Color(0xFF071E14),
+                    onRefresh: () async {
+                      await ref.read(nodesProvider.notifier).fetchNodes();
+                      if (selectedNode != null) {
+                        await ref.read(telemetryProvider.notifier).fetchHistory(selectedNode.id);
+                      }
+                    },
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // A. Station Header + Hero Weather Section
+                          if (selectedNode != null) ...[
+                            Builder(
+                              builder: (context) {
+                                final sensors = selectedNode.sensors;
+                                final ambTemp = _getSensorVal(sensors, ['suhu luar', 'udara', 'ambient', 'suhu lingkungan'], ref);
+                                final ambHum = _getSensorVal(sensors, ['kelembaban udara', 'lembab luar', 'humidity'], ref);
+
+                                return StationHeroHeader(
+                                  node: selectedNode,
+                                  allNodes: nodesState.nodes,
+                                  ambientTemp: ambTemp,
+                                  ambientHumidity: ambHum,
+                                  onSelectNode: (id) {
+                                    ref.read(nodesProvider.notifier).selectNode(id);
+                                    ref.read(telemetryProvider.notifier).fetchHistory(id);
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                          const SizedBox(height: 18),
+
+                          // B. Today's AI Suggestion Card
+                          if (selectedNode != null) ...[
+                            Builder(
+                              builder: (context) {
+                                final sensors = selectedNode.sensors;
+                                final n = _getSensorVal(sensors, ['nitrogen'], ref);
+                                final p = _getSensorVal(sensors, ['phosphor', 'fosfor', 'phosphorus'], ref);
+                                final k = _getSensorVal(sensors, ['kalium', 'potassium'], ref);
+                                final moist = _getSensorVal(sensors, ['kelembaban rata', 'kelembaban tanah 1', 'lengas', 'kelembaban'], ref);
+                                final boxTemp = _getSensorVal(sensors, ['suhu dalam', 'casing', 'enclosure', 'box', 'panel'], ref);
+
+                                return AiSuggestionCard(
+                                  nVal: n,
+                                  pVal: p,
+                                  kVal: k,
+                                  soilMoisture: moist,
+                                  boxTemp: boxTemp,
+                                );
+                              },
+                            ),
+                          ],
+                          const SizedBox(height: 16),
+
+                          // C. Executive KPI Cards Carousel
+                          if (selectedNode != null) ...[
+                            Builder(
+                              builder: (context) {
+                                final sensors = selectedNode.sensors;
+                                final n = _getSensorVal(sensors, ['nitrogen'], ref) ?? 68.7;
+                                final p = _getSensorVal(sensors, ['phosphor', 'fosfor', 'phosphorus'], ref) ?? 35.9;
+                                final k = _getSensorVal(sensors, ['kalium', 'potassium'], ref) ?? 28.4;
+
+                                final soilMoist = _getSensorVal(sensors, ['kelembaban rata', 'kelembaban tanah 1', 'lengas', 'kelembaban'], ref) ?? 58.4;
+                                final ph = _getSensorVal(sensors, ['ph'], ref) ?? 6.8;
+                                final ec = _getSensorVal(sensors, ['ec', 'salinitas', 'konduktivitas'], ref) ?? 1240.0;
+                                final soilTemp = _getSensorVal(sensors, ['suhu tanah'], ref) ?? 26.5;
+
+                                final encTemp = _getSensorVal(sensors, ['suhu dalam', 'casing', 'enclosure', 'box', 'panel'], ref) ?? 32.4;
+                                final ambTemp = _getSensorVal(sensors, ['suhu luar', 'udara', 'ambient', 'suhu lingkungan'], ref) ?? 28.1;
+                                final ambHum = _getSensorVal(sensors, ['kelembaban udara', 'lembab luar', 'humidity'], ref) ?? 72.0;
+                                final battery = _getSensorVal(sensors, ['baterai', 'battery', 'tegangan'], ref) ?? 12.6;
+
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 154,
+                                      child: PageView(
+                                        controller: _pageController,
+                                        onPageChanged: (idx) => setState(() => _heroCardIndex = idx),
+                                        children: [
+                                          NpkSummaryCard(nVal: n, pVal: p, kVal: k),
+                                          SoilConditionCard(avgMoisture: soilMoist, phVal: ph, ecVal: ec, soilTemp: soilTemp),
+                                          ThermalIotCard(enclosureTemp: encTemp, ambientTemp: ambTemp, ambientHumidity: ambHum, batteryVolt: battery),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+
+                                    // Dots Indicator
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: List.generate(3, (i) {
+                                        final isCurrent = i == _heroCardIndex;
+                                        return AnimatedContainer(
+                                          duration: const Duration(milliseconds: 250),
+                                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                                          width: isCurrent ? 20 : 6,
+                                          height: 5,
+                                          decoration: BoxDecoration(
+                                            color: isCurrent ? const Color(0xFF34D399) : Colors.white24,
+                                            borderRadius: BorderRadius.circular(3),
+                                          ),
+                                        );
+                                      }),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ],
+                          const SizedBox(height: 18),
+
+                          // D. Category Filter Pills
+                          if (selectedNode != null) ...[
+                            Builder(
+                              builder: (context) {
+                                final sensors = selectedNode.sensors;
+                                final npkCount = _filterSensorsWithCat(sensors, 'npk').length;
+                                final soilCount = _filterSensorsWithCat(sensors, 'soil').length;
+                                final envCount = _filterSensorsWithCat(sensors, 'environment').length;
+
+                                return SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  physics: const BouncingScrollPhysics(),
+                                  child: Row(
+                                    children: [
+                                      _buildCategoryPill(
+                                        id: 'all',
+                                        label: 'Semua',
+                                        count: sensors.length,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      _buildCategoryPill(
+                                        id: 'npk',
+                                        label: 'Unsur NPK',
+                                        count: npkCount,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      _buildCategoryPill(
+                                        id: 'soil',
+                                        label: 'Kondisi Tanah',
+                                        count: soilCount,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      _buildCategoryPill(
+                                        id: 'environment',
+                                        label: 'Lingkungan Boks',
+                                        count: envCount,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                          const SizedBox(height: 14),
+
+                          // E. Sensor Metric Cards Grid
+                          if (selectedNode != null) ...[
+                            Builder(
+                              builder: (context) {
+                                final filtered = _filterSensorsWithCat(selectedNode.sensors, _selectedCategory);
+
+                                if (filtered.isEmpty) {
+                                  return Container(
+                                    padding: const EdgeInsets.all(24),
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      'Tidak ada sensor dalam kategori ini',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        color: Colors.white60,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                return GridView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 1.32,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                  ),
+                                  itemCount: filtered.length,
+                                  itemBuilder: (context, idx) {
+                                    final sensor = filtered[idx];
+                                    final val = ref.watch(telemetryProvider.notifier).getLiveSensorValue(sensor);
+                                    return SensorMetricCard(
+                                      sensor: sensor,
+                                      value: val,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -425,8 +325,6 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
     required String id,
     required String label,
     required int count,
-    required IconData icon,
-    required Color accentColor,
   }) {
     final isSelected = _selectedCategory == id;
 
@@ -434,81 +332,52 @@ class _GuestDashboardScreenState extends ConsumerState<GuestDashboardScreen> {
       onTap: () => setState(() => _selectedCategory = id),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE2E8F0) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected
+              ? const Color(0xFF10B981)
+              : Colors.white.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: isSelected ? const Color(0xFF94A3B8) : const Color(0xFFE2E8F0),
-            width: isSelected ? 1.5 : 1,
+            color: isSelected
+                ? const Color(0xFF34D399)
+                : Colors.white.withOpacity(0.14),
+            width: 1,
           ),
-          boxShadow: [
-            if (isSelected)
-              BoxShadow(
-                color: const Color(0xFF64748B).withOpacity(0.18),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
-              )
-            else
-              BoxShadow(
-                color: Colors.black.withOpacity(0.02),
-                blurRadius: 4,
-                offset: const Offset(0, 1),
-              ),
-          ],
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFF10B981).withOpacity(0.40),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Category Icon Container
-            Container(
-              padding: const EdgeInsets.all(4.5),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.white : accentColor.withOpacity(0.10),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: isSelected ? const Color(0xFFCBD5E1) : Colors.transparent,
-                  width: 0.8,
-                ),
-              ),
-              child: Icon(
-                icon,
-                size: 13,
-                color: accentColor,
-              ),
-            ),
-            const SizedBox(width: 7),
-
-            // Category Label
             Text(
               label,
-              style: TextStyle(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
-                color: isSelected ? const Color(0xFF0F172A) : const Color(0xFF64748B),
-                letterSpacing: -0.2,
+                fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                color: isSelected ? const Color(0xFF042F1E) : Colors.white,
               ),
             ),
             const SizedBox(width: 6),
-
-            // Number Badge
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.white : const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: isSelected ? const Color(0xFF94A3B8) : const Color(0xFFE2E8F0),
-                  width: 0.8,
-                ),
+                color: isSelected ? const Color(0xFF042F1E).withOpacity(0.20) : Colors.white.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 '$count',
-                style: TextStyle(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                  color: isSelected ? const Color(0xFF0F172A) : const Color(0xFF94A3B8),
+                  fontWeight: FontWeight.w800,
+                  color: isSelected ? const Color(0xFF042F1E) : const Color(0xFF94A3B8),
                 ),
               ),
             ),

@@ -2,18 +2,25 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../models/node_model.dart';
+import 'liquid_glass_panel.dart';
+import 'event_logs_bottom_sheet.dart';
 
 class StationHeroHeader extends StatelessWidget {
   final NodeModel node;
   final List<NodeModel> allNodes;
   final Function(String) onSelectNode;
+  final double? ambientTemp;
+  final double? ambientHumidity;
 
   const StationHeroHeader({
     super.key,
     required this.node,
     required this.allNodes,
     required this.onSelectNode,
+    this.ambientTemp,
+    this.ambientHumidity,
   });
 
   void _showStationPickerBottomSheet(BuildContext context) {
@@ -24,236 +31,160 @@ class StationHeroHeader extends StatelessWidget {
       builder: (ctx) {
         return Container(
           decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            color: Color(0xFF071B13),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            border: Border(
+              top: BorderSide(color: Color(0xFF10B981), width: 1.2),
+            ),
           ),
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+          padding: const EdgeInsets.fromLTRB(18, 14, 18, 30),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Drag Handle Pill
+              // Drag Handle
               Center(
                 child: Container(
                   width: 38,
                   height: 4.5,
-                  margin: const EdgeInsets.only(bottom: 14),
+                  margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
+                    color: Colors.white24,
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
               ),
 
-              // Header Row
+              // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(7.5),
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFECFDF5),
+                          color: const Color(0xFF10B981).withOpacity(0.18),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: const Color(0xFFA7F3D0),
+                            color: const Color(0xFF10B981).withOpacity(0.35),
                             width: 0.8,
                           ),
                         ),
                         child: const Icon(
                           LucideIcons.radio,
-                          size: 17,
-                          color: Color(0xFF047857),
+                          size: 18,
+                          color: Color(0xFF34D399),
                         ),
                       ),
                       const SizedBox(width: 10),
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Pilih Stasiun IoT',
-                            style: TextStyle(
+                            'Pilih Stasiun / Plot',
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 15,
-                              fontWeight: FontWeight.w900,
-                              color: Color(0xFF0F172A),
-                              letterSpacing: -0.3,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
                             ),
                           ),
                           Text(
-                            'Beralih stasiun untuk memantau telemetri lahan',
-                            style: TextStyle(
+                            '${allNodes.length} stasiun IoT terdaftar',
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
-                              color: Color(0xFF64748B),
+                              color: const Color(0xFF94A3B8),
                             ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    icon: const Icon(LucideIcons.x, size: 18, color: Color(0xFF64748B)),
-                    style: IconButton.styleFrom(
-                      backgroundColor: const Color(0xFFF8FAFC),
+                  GestureDetector(
+                    onTap: () => Navigator.of(ctx).pop(),
+                    child: Container(
                       padding: const EdgeInsets.all(6),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(LucideIcons.x, size: 16, color: Colors.white70),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
 
-              // Nodes List
-              Flexible(
+              // List of Nodes
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.45,
+                ),
                 child: ListView.separated(
                   shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
                   itemCount: allNodes.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  separatorBuilder: (_, __) => const SizedBox(height: 9),
                   itemBuilder: (context, idx) {
-                    final n = allNodes[idx];
-                    final isSelected = n.id == node.id;
-                    final isNodeOnline = n.status.toLowerCase() == 'online';
-                    final nCode = n.nodeCode.isNotEmpty ? n.nodeCode : 'NODE-0${idx + 1}';
-                    final nLoc = (n.location != null && n.location!.isNotEmpty)
-                        ? n.location!
-                        : 'Lahan Pertanian Terpadu';
+                    final item = allNodes[idx];
+                    final isSelected = item.id == node.id;
+                    final itemOnline = item.status.toLowerCase() == 'online';
 
-                    return Material(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(14),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          if (!isSelected) {
-                            onSelectNode(n.id);
-                          }
-                        },
-                        borderRadius: BorderRadius.circular(14),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: isSelected ? const Color(0xFFF0FDF4) : const Color(0xFFFFFFFF),
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(
-                              color: isSelected ? const Color(0xFF86EFAC) : const Color(0xFFE2E8F0),
-                              width: isSelected ? 1.4 : 1,
+                    return GestureDetector(
+                      onTap: () {
+                        onSelectNode(item.id);
+                        Navigator.of(ctx).pop();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFF10B981).withOpacity(0.18)
+                              : Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: isSelected
+                                ? const Color(0xFF34D399)
+                                : Colors.white.withOpacity(0.08),
+                            width: isSelected ? 1.4 : 0.8,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: itemOnline ? const Color(0xFF34D399) : const Color(0xFFF43F5E),
+                                shape: BoxShape.circle,
+                              ),
                             ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: isSelected
-                                    ? const Color(0xFF10B981).withOpacity(0.08)
-                                    : Colors.black.withOpacity(0.02),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              // Status Dot
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: BoxDecoration(
-                                  color: isNodeOnline ? const Color(0xFF10B981) : const Color(0xFFE11D48),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: (isNodeOnline ? const Color(0xFF10B981) : const Color(0xFFE11D48)).withOpacity(0.4),
-                                      blurRadius: 4,
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.name,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
                                     ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-
-                              // Info Column
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Flexible(
-                                          child: Text(
-                                            n.name,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 13.5,
-                                              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w800,
-                                              color: const Color(0xFF0F172A),
-                                              letterSpacing: -0.2,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFF1F5F9),
-                                            borderRadius: BorderRadius.circular(4),
-                                            border: Border.all(
-                                              color: const Color(0xFFE2E8F0),
-                                              width: 0.8,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            nCode,
-                                            style: const TextStyle(
-                                              fontSize: 9.5,
-                                              fontWeight: FontWeight.w800,
-                                              color: Color(0xFF475569),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                  ),
+                                  Text(
+                                    item.location ?? 'Greenhouse Pertanian',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 10.5,
+                                      color: const Color(0xFF94A3B8),
                                     ),
-                                    const SizedBox(height: 3),
-                                    Row(
-                                      children: [
-                                        const Icon(LucideIcons.mapPin, size: 10.5, color: Color(0xFF64748B)),
-                                        const SizedBox(width: 3.5),
-                                        Expanded(
-                                          child: Text(
-                                            nLoc,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              fontSize: 10.5,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xFF64748B),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          isNodeOnline ? 'Online' : 'Offline',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w800,
-                                            color: isNodeOnline ? const Color(0xFF047857) : const Color(0xFFBE123C),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-
-                              // Selection Checkmark Icon
-                              Icon(
-                                isSelected ? LucideIcons.circleCheck : LucideIcons.circle,
-                                size: 19,
-                                color: isSelected ? const Color(0xFF10B981) : const Color(0xFFCBD5E1),
-                              ),
-                            ],
-                          ),
+                            ),
+                            if (isSelected)
+                              const Icon(LucideIcons.circleCheck, size: 18, color: Color(0xFF34D399)),
+                          ],
                         ),
                       ),
                     );
@@ -270,223 +201,218 @@ class StationHeroHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isOnline = node.status.toLowerCase() == 'online';
-    final nowFormatted = DateFormat('HH:mm').format(DateTime.now());
-    final displayCode = node.nodeCode.isNotEmpty ? node.nodeCode : 'NODE-01';
-    final locationText = (node.location != null && node.location!.isNotEmpty)
-        ? node.location!
-        : 'Lahan Pertanian Terpadu';
+    final nowFormatted = DateFormat('EEEE, d MMM yyyy').format(DateTime.now());
+    final displayTemp = ambientTemp ?? 30.5;
+    final displayHum = ambientHumidity ?? 68.0;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(18),
-          child: InkWell(
-            onTap: () => _showStationPickerBottomSheet(context),
-            borderRadius: BorderRadius.circular(18),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10.5),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withOpacity(0.80),
-                    Colors.white.withOpacity(0.50),
-                    const Color(0xFFECFDF5).withOpacity(0.45),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.92),
-                  width: 1.4,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: (isOnline ? const Color(0xFF10B981) : const Color(0xFFE11D48)).withOpacity(0.08),
-                    blurRadius: 18,
-                    offset: const Offset(0, 6),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  // Top Glossy Light Highlight Sheen
-                  Positioned(
-                    top: -10.5,
-                    left: -14,
-                    right: -14,
-                    height: 24,
-                    child: Container(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── TOP BAR: Station Capsule Dropdown + Profile Icons ──────────────
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Station Selector Capsule
+            GestureDetector(
+              onTap: () => _showStationPickerBottomSheet(context),
+              child: LiquidGlassPanel(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                borderRadius: 30,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Live Dot
+                    Container(
+                      width: 7,
+                      height: 7,
                       decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.white.withOpacity(0.60),
-                            Colors.white.withOpacity(0.0),
-                          ],
+                        color: isOnline ? const Color(0xFF34D399) : const Color(0xFFF43F5E),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: (isOnline ? const Color(0xFF34D399) : const Color(0xFFF43F5E)).withOpacity(0.8),
+                            blurRadius: 6,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+
+                    // Node name
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 150),
+                      child: Text(
+                        node.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: -0.2,
                         ),
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 4),
 
-                  // Card Content
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    const Icon(LucideIcons.chevronDown, size: 14, color: Colors.white70),
+                  ],
+                ),
+              ),
+            ),
+
+            // Top Right Action Buttons
+            Row(
+              children: [
+                // Notification Bell
+                LiquidGlassPanel(
+                  onTap: () => showEventLogsBottomSheet(context),
+                  padding: const EdgeInsets.all(9),
+                  borderRadius: 30,
+                  child: Stack(
+                    clipBehavior: Clip.none,
                     children: [
-                      // Line 1: [🟢 Pulse Dot] + [Nama Node] + [NODE001] ---------> [🔽 Chevron]
-                      Row(
-                        children: [
-                          // Glowing Pulse Status Dot
-                          Container(
-                            width: 7.5,
-                            height: 7.5,
-                            decoration: BoxDecoration(
-                              color: isOnline ? const Color(0xFF10B981) : const Color(0xFFE11D48),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: (isOnline ? const Color(0xFF10B981) : const Color(0xFFE11D48)).withOpacity(0.65),
-                                  blurRadius: 6,
-                                  spreadRadius: 1,
-                                ),
-                              ],
-                            ),
+                      const Icon(LucideIcons.bell, size: 16, color: Colors.white),
+                      Positioned(
+                        right: -2,
+                        top: -2,
+                        child: Container(
+                          width: 6,
+                          height: 6,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFF59E0B),
+                            shape: BoxShape.circle,
                           ),
-                          const SizedBox(width: 8),
-
-                          // Node Name (Truncated if long)
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    node.name,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w900,
-                                      color: Color(0xFF0F172A),
-                                      letterSpacing: -0.3,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 6.5),
-
-                                // Frosted Node Code Capsule
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.85),
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(
-                                      color: Colors.white.withOpacity(0.95),
-                                      width: 0.8,
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.03),
-                                        blurRadius: 4,
-                                        offset: const Offset(0, 1),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    displayCode,
-                                    style: const TextStyle(
-                                      fontSize: 9.5,
-                                      fontWeight: FontWeight.w900,
-                                      color: Color(0xFF047857),
-                                      letterSpacing: 0.2,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-
-                          // Frosted Glass Selector Indicator Button
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.80),
-                              borderRadius: BorderRadius.circular(7),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.95),
-                                width: 0.8,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.03),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                            child: const Icon(
-                              LucideIcons.chevronDown,
-                              size: 13,
-                              color: Color(0xFF475569),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 5.5),
-
-                      // Line 2: [📍 Lokasi] • [🕒 WIB HH:mm]
-                      Row(
-                        children: [
-                          const Icon(LucideIcons.mapPin, size: 11.5, color: Color(0xFF64748B)),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              locationText,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF475569),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            '•',
-                            style: TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
-                          ),
-                          const SizedBox(width: 6),
-                          const Icon(LucideIcons.clock, size: 10.5, color: Color(0xFF64748B)),
-                          const SizedBox(width: 3.5),
-                          Text(
-                            'WIB $nowFormatted',
-                            style: const TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF475569),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+
+                // Avatar
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: const Color(0xFF34D399), width: 1.5),
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/cucumber_3d.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 18),
+
+        // ── HERO METRIC SECTION (Cultiveq Style) ──────────────────────────
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // Left: Date & Big Temperature Typography
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nowFormatted,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFFA7F3D0),
+                    letterSpacing: -0.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      ambientTemp != null ? ambientTemp!.toStringAsFixed(0) : '--',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 52,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        height: 1.0,
+                        letterSpacing: -2,
+                      ),
+                    ),
+                    Text(
+                      '°C',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF6EE7B7),
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            // Right: Micro-Climate Capsule
+            LiquidGlassPanel(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              borderRadius: 18,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(LucideIcons.sun, size: 14, color: Color(0xFFFCD34D)),
+                      const SizedBox(width: 5),
+                      Text(
+                        ambientHumidity != null ? 'Lembab ${ambientHumidity!.toStringAsFixed(0)}%' : 'Lembab --%',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 3),
+                  Builder(
+                    builder: (context) {
+                      String climateStatus = 'Zona Tumbuh Optimal';
+                      Color climateColor = const Color(0xFF6EE7B7);
+                      if (ambientTemp != null && ambientTemp! > 34.0) {
+                        climateStatus = 'Suhu Udara Panas';
+                        climateColor = const Color(0xFFF43F5E);
+                      } else if (ambientTemp != null && ambientTemp! < 20.0) {
+                        climateStatus = 'Suhu Udara Dingin';
+                        climateColor = const Color(0xFF38BDF8);
+                      } else if (ambientHumidity != null && ambientHumidity! < 40.0) {
+                        climateStatus = 'Udara Kering';
+                        climateColor = const Color(0xFFF59E0B);
+                      } else if (ambientHumidity != null && ambientHumidity! > 85.0) {
+                        climateStatus = 'Kelembaban Jenuh';
+                        climateColor = const Color(0xFFA78BFA);
+                      }
+
+                      return Text(
+                        climateStatus,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w600,
+                          color: climateColor,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
             ),
-          ),
+          ],
         ),
-      ),
+      ],
     );
   }
 }

@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../models/sensor_model.dart';
+import 'liquid_glass_panel.dart';
 
 class SensorMetricCard extends StatelessWidget {
   final SensorModel sensor;
@@ -14,8 +16,7 @@ class SensorMetricCard extends StatelessWidget {
   _MetricCardVisualState _getCardState(double? val) {
     if (val == null) {
       return _MetricCardVisualState(
-        gradient: const [Color(0xFF64748B), Color(0xFF475569), Color(0xFF334155)],
-        shadowColor: const Color(0x22000000),
+        statusColor: const Color(0xFF64748B),
         statusText: 'OFFLINE',
         isAlert: false,
         rangeText: '',
@@ -32,32 +33,29 @@ class SensorMetricCard extends StatelessWidget {
       rangeStr = '$minStr–$maxStr';
     }
 
-    // 1. Alert: Rendah (Below Min Threshold) - Sky / Ice Blue
+    // 1. Alert: Rendah (Below Min Threshold)
     if (min != null && val < min) {
       return _MetricCardVisualState(
-        gradient: const [Color(0xFF38BDF8), Color(0xFF0284C7), Color(0xFF0369A1)],
-        shadowColor: const Color(0x330284C7),
+        statusColor: const Color(0xFF38BDF8),
         statusText: 'RENDAH',
         isAlert: true,
         rangeText: rangeStr,
       );
     }
 
-    // 2. Alert: Tinggi (Above Max Threshold) - Coral Rose Alert
+    // 2. Alert: Tinggi (Above Max Threshold)
     if (max != null && val > max) {
       return _MetricCardVisualState(
-        gradient: const [Color(0xFFFB7185), Color(0xFFF43F5E), Color(0xFFE11D48)],
-        shadowColor: const Color(0x33E11D48),
+        statusColor: const Color(0xFFF43F5E),
         statusText: 'TINGGI',
         isAlert: true,
         rangeText: rangeStr,
       );
     }
 
-    // 3. Optimal / Normal (Within Safe Range) - Brand Green #008F00
+    // 3. Optimal / Normal
     return _MetricCardVisualState(
-      gradient: const [Color(0xFF00B200), Color(0xFF008F00), Color(0xFF006400)],
-      shadowColor: const Color(0x33008F00),
+      statusColor: const Color(0xFF34D399),
       statusText: 'OPTIMAL',
       isAlert: false,
       rangeText: rangeStr,
@@ -69,181 +67,91 @@ class SensorMetricCard extends StatelessWidget {
     final state = _getCardState(value);
     final formattedVal = value != null ? (value! % 1 == 0 ? value!.toInt().toString() : value!.toStringAsFixed(1)) : '--';
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: state.gradient,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: state.shadowColor,
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-        border: Border.all(
-          color: Colors.white.withOpacity(0.20),
-          width: 1,
-        ),
-      ),
-      child: Stack(
+    return LiquidGlassPanel(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      borderRadius: 18,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Ambient Decorative Circle
-          Positioned(
-            right: -15,
-            bottom: -15,
-            child: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.08),
-              ),
-            ),
-          ),
-
-          Column(
+          // Top row: Sensor Name + Status Pill
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Top Row: Sensor Title & Glassmorphism Status Capsule
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      sensor.name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white.withOpacity(0.95),
-                        height: 1.15,
-                        shadows: [
-                          Shadow(
-                            color: Colors.black.withOpacity(0.25),
-                            offset: const Offset(0, 1),
-                            blurRadius: 2,
-                          ),
-                        ],
-                      ),
-                    ),
+              Expanded(
+                child: Text(
+                  sensor.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    height: 1.15,
                   ),
-                  const SizedBox(width: 6),
-
-                  // Glassmorphism Status Capsule
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 6.5,
-                      vertical: state.isAlert ? 2.5 : 3.5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.25),
-                      borderRadius: BorderRadius.circular(state.isAlert ? 8 : 20),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.40),
-                        width: 0.8,
-                      ),
-                    ),
-                    child: state.isAlert
-                        ? Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                state.statusText,
-                                style: const TextStyle(
-                                  fontSize: 8.5,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                  letterSpacing: 0.3,
-                                  height: 1,
-                                ),
-                              ),
-                              if (state.rangeText.isNotEmpty) ...[
-                                Container(
-                                  margin: const EdgeInsets.symmetric(vertical: 1.5),
-                                  width: 24,
-                                  height: 0.5,
-                                  color: Colors.white.withOpacity(0.35),
-                                ),
-                                Text(
-                                  state.rangeText,
-                                  style: TextStyle(
-                                    fontSize: 7.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white.withOpacity(0.95),
-                                    height: 1,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          )
-                        : Text(
-                            state.statusText,
-                            style: const TextStyle(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                              letterSpacing: 0.3,
-                              height: 1,
-                            ),
-                          ),
-                  ),
-                ],
+                ),
               ),
-
-              // Bottom Row: Large Value + Unit
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Text(
-                    formattedVal,
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      letterSpacing: -0.5,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.25),
-                          offset: const Offset(0, 1.5),
-                          blurRadius: 3,
-                        ),
-                      ],
-                    ),
+              const SizedBox(width: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: state.statusColor.withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: state.statusColor.withOpacity(0.40),
+                    width: 0.8,
                   ),
-                  if (sensor.unit.isNotEmpty) ...[
-                    const SizedBox(width: 3.5),
-                    Expanded(
-                      child: Text(
-                        sensor.unit,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 10.5,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white.withOpacity(0.90),
-                          shadows: [
-                            Shadow(
-                              color: Colors.black.withOpacity(0.2),
-                              offset: const Offset(0, 1),
-                              blurRadius: 1,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
+                ),
+                child: Text(
+                  state.statusText,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.w800,
+                    color: state.statusColor,
+                  ),
+                ),
               ),
             ],
           ),
+
+          // Bottom value & unit
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                formattedVal,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                sensor.unit,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF94A3B8),
+                ),
+              ),
+            ],
+          ),
+
+          // Ideal range if available
+          if (state.rangeText.isNotEmpty)
+            Text(
+              'Ideal: ${state.rangeText} ${sensor.unit}',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 9,
+                fontWeight: FontWeight.w500,
+                color: const Color(0xFF6EE7B7),
+              ),
+            )
+          else
+            const SizedBox(height: 2),
         ],
       ),
     );
@@ -251,15 +159,13 @@ class SensorMetricCard extends StatelessWidget {
 }
 
 class _MetricCardVisualState {
-  final List<Color> gradient;
-  final Color shadowColor;
+  final Color statusColor;
   final String statusText;
   final bool isAlert;
   final String rangeText;
 
   _MetricCardVisualState({
-    required this.gradient,
-    required this.shadowColor,
+    required this.statusColor,
     required this.statusText,
     required this.isAlert,
     required this.rangeText,

@@ -1,6 +1,7 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'liquid_glass_panel.dart';
 
 class SoilConditionCard extends StatelessWidget {
   final double? avgMoisture;
@@ -22,387 +23,143 @@ class SoilConditionCard extends StatelessWidget {
     return 'Lembab Optimal';
   }
 
-  Color _getStatusColor(double moisture) {
-    if (moisture < 30 || moisture > 85) return const Color(0xFFF59E0B);
-    return const Color(0xFF0284C7);
-  }
-
   @override
   Widget build(BuildContext context) {
     final moisture = avgMoisture ?? 58.4;
     final ph = phVal ?? 6.8;
     final ec = ecVal ?? 1240.0;
     final temp = soilTemp ?? 26.5;
-
     final statusText = _getSoilStatus(moisture);
-    final statusColor = _getStatusColor(moisture);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withOpacity(0.68),
-                Colors.white.withOpacity(0.42),
-                const Color(0xFFF0F9FF).withOpacity(0.55),
-              ],
+    return LiquidGlassPanel(
+      padding: EdgeInsets.zero,
+      borderRadius: 22,
+      child: Stack(
+        children: [
+          // Chili plant photo overlay on right
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            child: ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Colors.transparent, Colors.white],
+                stops: [0.0, 0.45],
+              ).createShader(bounds),
+              blendMode: BlendMode.dstIn,
+              child: Image.asset(
+                'assets/images/chili_3d.jpg',
+                width: 165,
+                fit: BoxFit.cover,
+              ),
             ),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.92),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFF0284C7).withOpacity(0.12),
-                blurRadius: 24,
-                offset: const Offset(0, 8),
-              ),
-              BoxShadow(
-                color: const Color(0xFF34D399).withOpacity(0.08),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
-              ),
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
-          child: Stack(
-            children: [
-              // 1. 3D Chili Pepper Plant Illustration (No circle orbs)
-              Positioned(
-                right: -6,
-                top: -8,
-                bottom: -8,
-                child: Opacity(
-                  opacity: 0.35,
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.horizontal(right: Radius.circular(20)),
-                    child: Image.asset(
-                      'assets/images/chili_3d.jpg',
-                      width: 145,
-                      fit: BoxFit.cover,
-                    ),
+
+          // Content
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 11, 14, 11),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Kondisi & Kelembaban Tanah',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                    letterSpacing: -0.3,
                   ),
                 ),
-              ),
-
-              // Top Glossy Light Highlight Sheen
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 42,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withOpacity(0.50),
-                        Colors.white.withOpacity(0.0),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              // Main Card Content
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10.5),
-                child: Column(
+                const SizedBox(height: 2),
+                Row(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header Row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(5.5),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Colors.white.withOpacity(0.95),
-                                    const Color(0xFFE0F2FE).withOpacity(0.85),
-                                  ],
-                                ),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 1.2,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF0284C7).withOpacity(0.20),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(LucideIcons.droplets, size: 13, color: Color(0xFF0284C7)),
-                            ),
-                            const SizedBox(width: 7),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Kondisi & Kelembaban Tanah',
-                                  style: TextStyle(
-                                    fontSize: 12.5,
-                                    fontWeight: FontWeight.w900,
-                                    color: Color(0xFF0F172A),
-                                    letterSpacing: -0.3,
-                                  ),
-                                ),
-                                Text(
-                                  'Media Perakaran Multi-Probe',
-                                  style: TextStyle(
-                                    fontSize: 9.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF475569),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        // Liquid Glass Status Badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.5, vertical: 3.5),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.white.withOpacity(0.90),
-                                Colors.white.withOpacity(0.70),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 1.2,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: statusColor.withOpacity(0.20),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 6,
-                                height: 6,
-                                decoration: BoxDecoration(
-                                  color: statusColor,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: statusColor.withOpacity(0.8),
-                                      blurRadius: 5,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                statusText,
-                                style: TextStyle(
-                                  fontSize: 9.5,
-                                  fontWeight: FontWeight.w900,
-                                  color: statusColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF38BDF8),
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                    const SizedBox(height: 8.5),
-
-                    // 4 Grid KPI Values with Liquid Glass Micro-Cells
-                    Row(
-                      children: [
-                        _buildLiquidSoilItem(
-                          icon: LucideIcons.droplets,
-                          title: 'Lengas',
-                          val: '${moisture.toStringAsFixed(1)}%',
-                          accentColor: const Color(0xFF0284C7),
-                          tintColor: const Color(0xFF38BDF8),
-                        ),
-                        const SizedBox(width: 5.5),
-                        _buildLiquidSoilItem(
-                          icon: LucideIcons.activity,
-                          title: 'pH',
-                          val: ph.toStringAsFixed(1),
-                          accentColor: const Color(0xFF059669),
-                          tintColor: const Color(0xFF34D399),
-                        ),
-                        const SizedBox(width: 5.5),
-                        _buildLiquidSoilItem(
-                          icon: LucideIcons.zap,
-                          title: 'EC',
-                          val: '${ec.toStringAsFixed(0)} µS',
-                          accentColor: const Color(0xFF7C3AED),
-                          tintColor: const Color(0xFFA855F7),
-                        ),
-                        const SizedBox(width: 5.5),
-                        _buildLiquidSoilItem(
-                          icon: LucideIcons.thermometer,
-                          title: 'Suhu',
-                          val: '${temp.toStringAsFixed(1)}°C',
-                          accentColor: const Color(0xFFEA580C),
-                          tintColor: const Color(0xFFFB923C),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 7.5),
-
-                    // Liquid Soil Moisture Track Indicator
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: Container(
-                        height: 5.5,
-                        padding: const EdgeInsets.all(0.5),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.55),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.80),
-                            width: 0.8,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: (moisture.clamp(0, 100)).round(),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [Color(0xFF38BDF8), Color(0xFF0284C7)],
-                                  ),
-                                  borderRadius: BorderRadius.circular(3),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFF0284C7).withOpacity(0.35),
-                                      blurRadius: 3,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: (100 - moisture.clamp(0, 100)).round(),
-                              child: const SizedBox.shrink(),
-                            ),
-                          ],
-                        ),
+                    const SizedBox(width: 5),
+                    Text(
+                      statusText,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF7DD3FC),
                       ),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+
+                // 4 metrics
+                Row(
+                  children: [
+                    _buildMetric(LucideIcons.droplets,    'Lengas', '${moisture.toStringAsFixed(1)}%', const Color(0xFF38BDF8)),
+                    const SizedBox(width: 10),
+                    _buildMetric(LucideIcons.activity,    'pH',     ph.toStringAsFixed(1),             const Color(0xFF34D399)),
+                    const SizedBox(width: 10),
+                    _buildMetric(LucideIcons.zap,         'EC',     '${ec.toStringAsFixed(0)} µS',     const Color(0xFFA78BFA)),
+                    const SizedBox(width: 10),
+                    _buildMetric(LucideIcons.thermometer, 'Suhu',   '${temp.toStringAsFixed(1)}°C',    const Color(0xFFFB923C)),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildLiquidSoilItem({
-    required IconData icon,
-    required String title,
-    required String val,
-    required Color accentColor,
-    required Color tintColor,
-  }) {
+  Widget _buildMetric(IconData icon, String label, String value, Color accent) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5.5, vertical: 5),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withOpacity(0.78),
-              tintColor.withOpacity(0.12),
-              Colors.white.withOpacity(0.55),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: Colors.white,
-            width: 1.2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: accentColor.withOpacity(0.10),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 3,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Top Row: Mini Icon + Title
-            Row(
-              children: [
-                Icon(icon, size: 10, color: accentColor),
-                const SizedBox(width: 3),
-                Expanded(
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w800,
-                      color: accentColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 3),
-
-            // Value Text
-            Text(
-              val,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w900,
-                color: Color(0xFF0F172A),
-                letterSpacing: -0.3,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 26,
+            height: 26,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: accent.withOpacity(0.18),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: accent.withOpacity(0.35),
+                width: 0.8,
               ),
             ),
-          ],
-        ),
+            child: Icon(icon, size: 13, color: accent),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 9.5,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF94A3B8),
+            ),
+          ),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              letterSpacing: -0.3,
+              height: 1.2,
+            ),
+          ),
+        ],
       ),
     );
   }
